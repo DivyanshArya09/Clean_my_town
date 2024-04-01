@@ -13,7 +13,7 @@ class RealtimeDBHelper {
   FireBaseStorageHelper fireStorageHelpers = FireBaseStorageHelper();
   FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
 
-  DatabaseReference db = FirebaseDatabase.instance.ref();
+  DatabaseReference db = FirebaseDatabase.instance.ref().child('requests');
 
   Future<Either<Failure, List<RequestModel>>> getOthersRquest() async {
     String? town = await SharedPreferencesHelper.getLocation();
@@ -21,11 +21,10 @@ class RealtimeDBHelper {
     print(town);
     try {
       DataSnapshot snapshot = await db.once().then((value) => value.snapshot);
-      if (snapshot != null && snapshot.value != null) {
+      if (snapshot.value != null) {
         Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
         values.forEach((key, value) {
           if (value['town'].toString().toLowerCase() == town?.toLowerCase()) {
-            // results.add({'key': key, 'data': value});
             RequestModel model = RequestModel(
                 image: value['image'],
                 town: value['town'],
@@ -55,16 +54,11 @@ class RealtimeDBHelper {
   Future<Either<Failure, void>> addRequest(
       RequestModel data, File image) async {
     final uniquekey = DateTime.now().microsecondsSinceEpoch.toString();
-    UserModel user = await fireStoreHelpers.getUser();
-    List<String> requests = user.requests..add(uniquekey);
-    fireStoreHelpers.saveUser(user.copyWith(requests: requests));
-    // firstore store
     try {
-      String imageUrl = await fireStorageHelpers.uploadImage(image);
-      print(
-          '===================================> ${data.copyWith(image: imageUrl, user: user.email)}');
+      // String imageUrl = await fireStorageHelpers.uploadImage(image);
+      String id = await fireStoreHelpers.updateMyRequestInFirestore(uniquekey);
       await db.child(uniquekey).set(
-            data.copyWith(image: imageUrl, user: user.email).toJson(),
+            data.copyWith(image: '', user: id).toJson(),
           );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/default_contants.dart';
-import 'package:app/core/managers/location_manager.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
@@ -10,6 +9,7 @@ import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
 import 'package:app/features/add_request/presentation/bloc/geolocator_bloc.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
+import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:app/ui/custom_text_field.dart';
@@ -40,14 +40,13 @@ class _AddRequestPageState extends State<AddRequestPage> {
     _titleTC = TextEditingController();
     _locationTC = TextEditingController();
     _descriptionTC = TextEditingController();
-    _locationTC.text =
-        "${widget.location.address.state}, ${widget.location.address.town}, ${widget.location.address.road}, ${widget.location.address.postcode}";
-    LocationManager.getLocation().then((value) => {
-          _geolocatorRefBloc.add(GetLocation(
-            lat: value.latitude,
-            long: value.longitude,
-          )),
-        });
+    _locationTC.text = widget.location.displayName;
+    // LocationManager.getLocation().then((value) => {
+    //       _geolocatorRefBloc.add(GetLocation(
+    //         lat: value.latitude,
+    //         long: value.longitude,
+    //       )),
+    //     });
     super.initState();
   }
 
@@ -80,7 +79,8 @@ class _AddRequestPageState extends State<AddRequestPage> {
                   ToastHelpers.showToast(state.error);
                 }
                 if (state is RequestSuccess) {
-                  CustomNavigator.pop(context);
+                  CustomNavigator.pushReplace(context, AppPages.home,
+                      arguments: false);
                 }
 
                 if (state is RequestLoading) {
@@ -197,11 +197,11 @@ class _AddRequestPageState extends State<AddRequestPage> {
                           location:
                               "${widget.location.lat.toString()}-${widget.location.lon.toString()}",
                           image: image!.path,
-                          town: town,
+                          town: widget.location.address.stateDistrict,
                           status: true,
                         );
 
-                        print('------------------->${reqModel}');
+                        print('------------------->${image}');
 
                         _requestRefBloc.add(AddRequest(
                             requestModel: reqModel, imagePath: image!));

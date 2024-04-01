@@ -16,3 +16,5 @@ class GeolocatorSuccess extends GeolocatorState {
   final LocationModel locationModel;
   GeolocatorSuccess({required this.locationModel});
 }
+
+class LocationUpdateFailure extends GeolocatorState {}

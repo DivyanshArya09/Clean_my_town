@@ -3,6 +3,7 @@ import 'package:app/features/add_request/presentation/pages/add_request_page.dar
 import 'package:app/features/auth/presentation/pages/login_page.dart';
 import 'package:app/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:app/features/auth/presentation/pages/verfy_email_page.dart';
+import 'package:app/features/home/presentation/auth_gate.dart';
 import 'package:app/features/home/presentation/pages/home_page.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +15,14 @@ class CustomNavigator {
     switch (settings.name) {
       case AppPages.home:
         return MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => HomePage(
+            fetch: settings.arguments as bool,
+          ),
           settings: settings,
         );
       case AppPages.initial:
         return MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const AuthGate(),
           settings: settings,
         );
       case AppPages.login:
@@ -47,7 +50,9 @@ class CustomNavigator {
 
       default:
         return MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => HomePage(
+            fetch: settings.arguments as bool,
+          ),
         );
     }
   }

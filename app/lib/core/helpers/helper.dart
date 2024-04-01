@@ -11,9 +11,22 @@ class SharedPreferencesHelper {
     return prefs.getString('uid');
   }
 
-  static Future<void> setLocation(String latlong) async {
+  static Future<void> setDestrict(String district) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('currentlocation', latlong);
+    await prefs.setString('currentlocation', district);
+  }
+
+  static Future<void> setCordinates(double lat, double lng) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('currentLatitude', lat);
+    await prefs.setDouble('currentLongitude', lng);
+  }
+
+  static Future<List<double>> getCordinates() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final double lat = prefs.getDouble('currentLatitude') ?? 0.0;
+    final double lng = prefs.getDouble('currentLongitude') ?? 0.0;
+    return [lat, lng];
   }
 
   static Future<String?> getLocation() async {

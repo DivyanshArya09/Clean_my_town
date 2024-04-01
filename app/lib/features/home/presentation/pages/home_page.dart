@@ -1,5 +1,4 @@
 import 'package:app/core/constants/app_colors.dart';
-import 'package:app/core/helpers/helper.dart';
 import 'package:app/core/managers/location_manager.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/toast_utils.dart';
@@ -12,7 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final bool? fetch;
+  const HomePage({super.key, this.fetch = true});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -20,6 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _geofenceBloc = GeolocatorBloc();
+
   final FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
 
   @override
@@ -32,12 +33,17 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      LocationManager.getLocation().then((value) {
-        _geofenceBloc
-            .add(GetLocation(lat: value.latitude, long: value.longitude));
-      });
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        LocationManager.getLocation().then(
+          (value) {
+             _geofenceBloc.add(
+                    GetLocation(lat: value.latitude, long: value.longitude))
+               
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -82,16 +88,11 @@ class _HomePageState extends State<HomePage> {
               ToastHelpers.showToast(state.error);
             }
             if (state is GeolocatorSuccess) {
-              SharedPreferencesHelper.setLocation(
-                state.locationModel.address.town.isEmpty
-                    ? state.locationModel.address.state
-                    : state.locationModel.address.town,
-              );
-              fireStoreHelpers.updatelocation(
-                state.locationModel.address.town.isEmpty
-                    ? state.locationModel.address.state
-                    : state.locationModel.address.town,
-              );
+              ToastHelpers.showToast(
+                  'Got location ${state.locationModel.address.stateDistrict}');
+            }
+            if (state is LocationUpdateFailure) {
+              ToastHelpers.showToast('Failed to get location');
             }
           },
           builder: (context, state) {
