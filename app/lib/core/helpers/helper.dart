@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -16,6 +18,23 @@ class SharedPreferencesHelper {
     await prefs.setString('currentlocation', district);
   }
 
+  static Future<void> setLocation(Map<String, dynamic> location) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String json = jsonEncode(location);
+    await prefs.setString('currentlocation', json);
+    // return prefs
+  }
+
+  static Future<Map<String, dynamic>> getLocation() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? jsonMap = await prefs.getString('currentlocation');
+    if (jsonMap != null) {
+      return jsonDecode(jsonMap);
+    } else {
+      return {};
+    }
+  }
+
   static Future<void> setCordinates(double lat, double lng) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('currentLatitude', lat);
@@ -29,8 +48,8 @@ class SharedPreferencesHelper {
     return [lat, lng];
   }
 
-  static Future<String?> getLocation() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('currentlocation');
-  }
+  // static Future<String?> getLocation() async {
+  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('currentlocation');
+  // }
 }

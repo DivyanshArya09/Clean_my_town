@@ -34,6 +34,19 @@ class LocationModel {
       boundingBox: json['boundingbox'].cast<String>(),
     );
   }
+  Map<String, dynamic> toMap() {
+    return {
+      'place_id': placeId,
+      'licence': licence,
+      'osm_type': osmType,
+      'osm_id': osmId,
+      'lat': lat,
+      'lon': lon,
+      'display_name': displayName,
+      'address': address.toMap(),
+      'boundingbox': boundingBox,
+    };
+  }
 }
 
 class Address {
@@ -74,5 +87,20 @@ class Address {
       country: json['country'] ?? '',
       countryCode: json['country_code'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'amenity': amenity,
+      'road': road,
+      'town': town,
+      'county': county,
+      'state_district': stateDistrict,
+      'state': state,
+      'ISO3166-2-lvl4': iso3166lvl4,
+      'postcode': postcode,
+      'country': country,
+      'country_code': countryCode,
+    };
   }
 }

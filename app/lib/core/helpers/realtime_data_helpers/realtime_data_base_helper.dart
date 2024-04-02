@@ -1,10 +1,9 @@
 import 'dart:io';
 
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/helper.dart';
-import 'package:app/features/add_request/firebase_storage_helper/firebase_storage_helpers.dart';
+import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
+import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/home/firestore_helpers/firestore_helpers.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -16,15 +15,15 @@ class RealtimeDBHelper {
   DatabaseReference db = FirebaseDatabase.instance.ref().child('requests');
 
   Future<Either<Failure, List<RequestModel>>> getOthersRquest() async {
-    String? town = await SharedPreferencesHelper.getLocation();
+    // String? town = await SharedPreferencesHelper.getLocation();
     List<RequestModel> results = [];
-    print(town);
+    // print(town);
     try {
       DataSnapshot snapshot = await db.once().then((value) => value.snapshot);
       if (snapshot.value != null) {
         Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
         values.forEach((key, value) {
-          if (value['town'].toString().toLowerCase() == town?.toLowerCase()) {
+          if (value['town'].toString().toLowerCase() == 'delhi'.toLowerCase()) {
             RequestModel model = RequestModel(
                 image: value['image'],
                 town: value['town'],

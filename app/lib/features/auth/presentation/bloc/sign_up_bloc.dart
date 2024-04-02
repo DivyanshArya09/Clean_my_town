@@ -1,5 +1,5 @@
+import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/features/auth/auth_helpers/auth_helpers.dart';
-import 'package:app/features/home/firestore_helpers/firestore_helpers.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';

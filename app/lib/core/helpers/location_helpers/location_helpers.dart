@@ -18,6 +18,8 @@ class LocationHelper {
     if (response.statusCode == 200) {
       final model = LocationModel.fromJson(jsonDecode(response.body));
       return Right(model);
+    } else if (response.statusCode == 401) {
+      return Left(NormalFailure(message: response.body));
     } else {
       return Left(ServerFailure(message: response.body));
     }

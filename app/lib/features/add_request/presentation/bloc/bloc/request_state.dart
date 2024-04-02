@@ -30,3 +30,15 @@ class MyRequestSuccess extends RequestState {
   final List<RequestModel> requestModel;
   MyRequestSuccess({required this.requestModel});
 }
+
+class ImagePickerLoading extends RequestState {}
+
+class ImagePickerError extends RequestState {
+  final String error;
+  ImagePickerError({required this.error});
+}
+
+class ImagePickerSuccess extends RequestState {
+  final File imagePath;
+  ImagePickerSuccess({required this.imagePath});
+}

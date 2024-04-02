@@ -1,9 +1,8 @@
 import 'package:app/core/constants/app_colors.dart';
-import 'package:app/core/managers/location_manager.dart';
+import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/add_request/presentation/bloc/geolocator_bloc.dart';
-import 'package:app/features/home/firestore_helpers/firestore_helpers.dart';
 import 'package:app/features/home/tab_views/my_request.dart';
 import 'package:app/features/home/tab_views/other_request.dart';
 import 'package:flutter/material.dart';
@@ -35,12 +34,7 @@ class _HomePageState extends State<HomePage>
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        LocationManager.getLocation().then(
-          (value) {
-            _geofenceBloc
-                .add(GetLocation(lat: value.latitude, long: value.longitude));
-          },
-        );
+        _geofenceBloc.add(GetCurrentLatLang());
       },
     );
   }

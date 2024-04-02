@@ -1,4 +1,5 @@
 import 'package:app/core/constants/app_colors.dart';
+import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/add_request/model/request_model.dart';
@@ -59,13 +60,25 @@ class RequestTile extends StatelessWidget {
               ),
             ),
             CustomSpacers.height10,
-            SizedBox(
-              child: Text(
-                softWrap: true,
-                textAlign: TextAlign.start,
-                "Patiala, Patiala Tahsil, Patiala District, Punjab, 147001, India",
-                style: AppStyles.activetabStyle,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  AppImages.markerIcon,
+                  height: 30.h,
+                ),
+                CustomSpacers.width10,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * .7,
+                  child: Text(
+                    softWrap: true,
+                    textAlign: TextAlign.start,
+                    "Patiala, Patiala Tahsil, Patiala District, Punjab, 147001, India",
+                    style: AppStyles.activetabStyle,
+                  ),
+                ),
+              ],
             ),
             Row(
               children: [

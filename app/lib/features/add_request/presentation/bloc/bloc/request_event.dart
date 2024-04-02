@@ -10,3 +10,5 @@ class AddRequest extends RequestEvent {
 }
 
 class GetMyRequestEvent extends RequestEvent {}
+
+class PickImageEvent extends RequestEvent {}
