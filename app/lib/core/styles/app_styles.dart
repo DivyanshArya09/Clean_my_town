@@ -12,6 +12,11 @@ class AppStyles {
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
+  static TextStyle ts_14_grey = TextStyle(
+    color: AppColors.darkGray,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+  );
   static TextStyle roboto_16_700_light = TextStyle(
     color: AppColors.white,
     fontSize: 16,

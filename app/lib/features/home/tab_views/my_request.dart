@@ -5,6 +5,7 @@ import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
+import 'package:app/features/home/widgets/request_tile.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class _MyRequestsState extends State<MyRequests> {
 
   _buildRequestBody(List<RequestModel> requests) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
       height: double.maxFinite,
       width: double.maxFinite,
       color: AppColors.lightGray,
@@ -90,26 +91,7 @@ class _MyRequestsState extends State<MyRequests> {
       child: ListView.separated(
         itemCount: requests.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            tileColor: AppColors.white,
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                  width: 60, child: Image.network(requests[index].image)),
-            ),
-            trailing: TextButton(
-              onPressed: () {},
-              child:
-                  Text(requests[index].town, style: AppStyles.activetabStyle),
-            ),
-            title: Text(requests[index].title, style: AppStyles.titleStyle),
-            subtitle: Text(
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              requests[index].description,
-              style: AppStyles.roboto_14_500_dark,
-            ),
-          );
+          return RequestTile(request: requests[index]);
         },
         separatorBuilder: (BuildContext context, int index) {
           return const Divider(

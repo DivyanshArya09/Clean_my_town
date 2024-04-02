@@ -18,9 +18,9 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   final _geofenceBloc = GeolocatorBloc();
-
   final FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
 
   @override
@@ -37,9 +37,8 @@ class _HomePageState extends State<HomePage> {
       (_) {
         LocationManager.getLocation().then(
           (value) {
-             _geofenceBloc.add(
-                    GetLocation(lat: value.latitude, long: value.longitude))
-               
+            _geofenceBloc
+                .add(GetLocation(lat: value.latitude, long: value.longitude));
           },
         );
       },
@@ -48,6 +47,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -116,4 +116,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

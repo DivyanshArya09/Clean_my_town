@@ -9,6 +9,8 @@ class RequestModel extends Equatable {
   final String description;
   final String location;
   final String title;
+  final String? dateTime;
+  final String? address;
   final String user;
   final bool status;
 
@@ -21,6 +23,8 @@ class RequestModel extends Equatable {
     required this.title,
     required this.user,
     required this.status,
+    this.dateTime,
+    this.address,
   });
 
   factory RequestModel.empty() {
