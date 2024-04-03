@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:app/core/helpers/image_picker_helper.dart';
+import 'package:app/core/helpers/image_picker_helper/image_picker_helper.dart';
 import 'package:app/core/helpers/realtime_data_helpers/realtime_data_base_helper.dart';
 import 'package:app/features/add_request/model/request_model.dart';
 import 'package:bloc/bloc.dart';

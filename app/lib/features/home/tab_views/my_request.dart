@@ -6,6 +6,7 @@ import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
 import 'package:app/features/home/widgets/request_tile.dart';
+import 'package:app/features/shared/loading_page.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -42,9 +43,7 @@ class _MyRequestsState extends State<MyRequests> {
         }
 
         if (state is MyRequestLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const LoadingScreen();
         }
 
         if (state is MyRequestSuccess) {
@@ -94,10 +93,7 @@ class _MyRequestsState extends State<MyRequests> {
           return RequestTile(request: requests[index]);
         },
         separatorBuilder: (BuildContext context, int index) {
-          return const Divider(
-            thickness: 1,
-            color: AppColors.darkGray,
-          );
+          return CustomSpacers.height12;
         },
       ),
     );

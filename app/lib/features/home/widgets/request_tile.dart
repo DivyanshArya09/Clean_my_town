@@ -3,6 +3,7 @@ import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/add_request/model/request_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -37,9 +38,14 @@ class RequestTile extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(50),
-                    child: Image.network(
-                      'https://im.indiatimes.in/media/content/2016/Apr/garbage_1461846819.jpg',
-                      fit: BoxFit.fill,
+                    child: CachedNetworkImage(
+                      // placeholder: (context, url) => Icon(Icons.photo),
+                      imageUrl: request.image,
+                      fit: BoxFit.fitHeight,
+                      errorListener: (value) {},
+                      errorWidget: (context, url, error) {
+                        return Icon(Icons.photo, color: AppColors.white);
+                      },
                     ),
                   ),
                 ),

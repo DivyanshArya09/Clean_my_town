@@ -10,8 +10,7 @@ import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
 import 'package:app/features/add_request/presentation/bloc/geolocator_bloc.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
-import 'package:app/route/app_pages.dart';
-import 'package:app/route/custom_navigator.dart';
+import 'package:app/features/shared/loading_page.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:app/ui/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -73,28 +72,15 @@ class _AddRequestPageState extends State<AddRequestPage> {
                   ToastHelpers.showToast(state.error);
                 }
                 if (state is RequestSuccess) {
-                  CustomNavigator.pushReplace(context, AppPages.home,
-                      arguments: false);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  // CustomNavigator.pushReplace(context, AppPages.home,
+                  //     arguments: false);
                 }
 
                 if (state is RequestLoading) {
-                  showDialog(
-                    context: context,
-                    barrierDismissible:
-                        false, // Prevent user from dismissing dialog
-                    builder: (context) => const AlertDialog(
-                      backgroundColor: Colors.transparent,
-                      content: Center(
-                        child: SizedBox(
-                          height: 50,
-                          width: 50,
-                          child: CircularProgressIndicator(
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+                  showLoadingAlertDialog(context,
+                      message: "Creating Request Please wait...");
                 }
 
                 if (state is ImagePickerLoading) {
@@ -298,6 +284,9 @@ class _AddRequestPageState extends State<AddRequestPage> {
                                 town: widget.location.address.stateDistrict,
                                 status: true,
                               );
+
+                              print(
+                                  '=================> Imagepath ${image!.path}');
                               _requestRefBloc.add(AddRequest(
                                   requestModel: reqModel, imagePath: image!));
                             }

@@ -54,10 +54,10 @@ class RealtimeDBHelper {
       RequestModel data, File image) async {
     final uniquekey = DateTime.now().microsecondsSinceEpoch.toString();
     try {
-      // String imageUrl = await fireStorageHelpers.uploadImage(image);
+      String imageUrl = await fireStorageHelpers.uploadImage(image);
       String id = await fireStoreHelpers.updateMyRequestInFirestore(uniquekey);
       await db.child(uniquekey).set(
-            data.copyWith(image: '', user: id).toJson(),
+            data.copyWith(image: imageUrl, user: id).toJson(),
           );
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
