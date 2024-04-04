@@ -32,7 +32,8 @@ class RealtimeDBHelper {
                 location: value['location'],
                 title: value['title'],
                 user: value['user'],
-                status: value['status']);
+                status: value['status'],
+                dateTime: value['status']);
 
             results.add(model);
           }
@@ -75,26 +76,9 @@ class RealtimeDBHelper {
       List<RequestModel> requests = [];
       for (var snapshot in snapshots) {
         if (snapshot != null && snapshot.value != null) {
-          if (snapshot.value is Map<String, dynamic>) {
-            requests.add(
-                RequestModel.fromJson(snapshot.value as Map<String, dynamic>));
-          } else {
-            Map value = snapshot.value as Map;
-            RequestModel model = RequestModel(
-                image: value['image'],
-                town: value['town'],
-                profilePic: value['profilePic'],
-                description: value['description'],
-                location: value['location'],
-                title: value['title'],
-                user: value['user'],
-                status: value['status']);
-            requests.add(model);
-            // Handle the case where the value is not in the expected format
-          }
+          requests.add(RequestModel.fromJson(snapshot.value as Map));
         }
       }
-
       return Right(requests);
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));

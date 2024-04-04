@@ -34,6 +34,20 @@ class LocationModel {
       boundingBox: json['boundingbox'].cast<String>(),
     );
   }
+
+  factory LocationModel.empty() {
+    return LocationModel(
+      placeId: 0,
+      licence: '',
+      osmType: '',
+      osmId: 0,
+      lat: 0.0,
+      lon: 0.0,
+      displayName: '',
+      address: Address.empty(),
+      boundingBox: [],
+    );
+  }
   Map<String, dynamic> toMap() {
     return {
       'place_id': placeId,
@@ -86,6 +100,21 @@ class Address {
       postcode: json['postcode'] ?? '',
       country: json['country'] ?? '',
       countryCode: json['country_code'] ?? '',
+    );
+  }
+
+  factory Address.empty() {
+    return Address(
+      amenity: '',
+      road: '',
+      town: '',
+      county: '',
+      stateDistrict: '',
+      state: '',
+      iso3166lvl4: '',
+      postcode: '',
+      country: '',
+      countryCode: '',
     );
   }
 

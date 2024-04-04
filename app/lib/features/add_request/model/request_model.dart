@@ -9,10 +9,10 @@ class RequestModel extends Equatable {
   final String description;
   final String location;
   final String title;
-  final String? dateTime;
-  final String? address;
+  final String dateTime;
   final String user;
   final bool status;
+  final String fullAddress;
 
   RequestModel({
     required this.image,
@@ -23,8 +23,8 @@ class RequestModel extends Equatable {
     required this.title,
     required this.user,
     required this.status,
-    this.dateTime,
-    this.address,
+    required this.dateTime,
+    this.fullAddress = '',
   });
 
   factory RequestModel.empty() {
@@ -37,10 +37,12 @@ class RequestModel extends Equatable {
       user: '',
       status: false,
       location: '',
+      dateTime: '',
+      fullAddress: '',
     );
   }
 
-  factory RequestModel.fromJson(Map<String, dynamic> json) {
+  factory RequestModel.fromJson(Map json) {
     return RequestModel(
       image: json['image'] ?? '',
       town: json['town'] ?? '',
@@ -50,6 +52,8 @@ class RequestModel extends Equatable {
       title: json['title'] ?? '',
       user: json['user'] ?? '',
       status: json['status'] ?? false,
+      dateTime: json['dateTime'] ?? '',
+      fullAddress: json['fullAddress'] ?? '',
     );
   }
   RequestModel copyWith({
@@ -61,6 +65,8 @@ class RequestModel extends Equatable {
     String? user,
     String? profilePic,
     bool? status,
+    String? dateTime,
+    String? fullAddress,
   }) {
     return RequestModel(
       title: title ?? this.title,
@@ -71,6 +77,8 @@ class RequestModel extends Equatable {
       user: user ?? this.user,
       profilePic: profilePic ?? this.profilePic,
       status: status ?? this.status,
+      dateTime: dateTime ?? this.dateTime,
+      fullAddress: fullAddress ?? this.fullAddress,
     );
   }
 
@@ -84,11 +92,12 @@ class RequestModel extends Equatable {
       'title': title,
       'user': user,
       'status': status,
+      'dateTime': dateTime,
+      'fullAddress': fullAddress
     };
   }
 
   @override
-  // TODO: implement props
   List<Object?> get props =>
       [image, town, profilePic, description, location, title, user, status];
 }

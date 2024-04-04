@@ -5,7 +5,7 @@ import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/add_request/presentation/bloc/geolocator_bloc.dart';
 import 'package:app/features/home/tab_views/my_request.dart';
 import 'package:app/features/home/tab_views/other_request.dart';
-import 'package:app/features/shared/loading_page.dart';
+import 'package:app/features/shared/getting_location_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,28 +51,39 @@ class _HomePageState extends State<HomePage>
             statusBarColor: AppColors.primary,
           ),
           centerTitle: true,
-          title: const Text('Clean my Town'),
+          title: const Text(
+            'Clean my Town',
+            style: AppStyles.appBarStyle,
+          ),
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: TabBar(
-              labelStyle: AppStyles.activetabStyle,
-              unselectedLabelStyle: AppStyles.inActivetabStyle,
-              dividerColor: AppColors.primary,
-              indicatorColor: AppColors.primary,
-              tabAlignment: TabAlignment.start,
-              isScrollable: true,
-              physics: const ClampingScrollPhysics(),
-              tabs: const [
-                Tab(
-                  text: 'My Requests',
-                ),
-                Tab(
-                  text: 'Open Requests',
-                ),
-                Tab(
-                  text: 'Register Complains',
-                ),
-              ],
+            child: BlocBuilder<GeolocatorBloc, GeolocatorState>(
+              bloc: _geofenceBloc,
+              builder: (context, state) {
+                if (state is GeolocatorSuccess)
+                  return TabBar(
+                    labelStyle: AppStyles.activetabStyle,
+                    unselectedLabelStyle: AppStyles.inActivetabStyle,
+                    dividerColor: AppColors.primary,
+                    indicatorColor: AppColors.primary,
+                    tabAlignment: TabAlignment.start,
+                    isScrollable: true,
+                    physics: const ClampingScrollPhysics(),
+                    tabs: const [
+                      Tab(
+                        text: 'My Requests',
+                      ),
+                      Tab(
+                        text: 'Open Requests',
+                      ),
+                      Tab(
+                        text: 'Register Complains',
+                      ),
+                    ],
+                  );
+
+                return SizedBox.shrink();
+              },
             ),
           ),
         ),
@@ -105,7 +116,7 @@ class _HomePageState extends State<HomePage>
                 ],
               );
             }
-            return const LoadingScreen();
+            return const GettingLocationPage();
           },
         ),
       ),

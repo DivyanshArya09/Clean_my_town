@@ -41,7 +41,7 @@ class RequestTile extends StatelessWidget {
                     child: CachedNetworkImage(
                       // placeholder: (context, url) => Icon(Icons.photo),
                       imageUrl: request.image,
-                      fit: BoxFit.fitHeight,
+                      fit: BoxFit.cover,
                       errorListener: (value) {},
                       errorWidget: (context, url, error) {
                         return Icon(Icons.photo, color: AppColors.white);
@@ -50,7 +50,13 @@ class RequestTile extends StatelessWidget {
                   ),
                 ),
                 CustomSpacers.width14,
-                Text(request.title, style: AppStyles.titleStyle),
+                SizedBox(
+                    width: MediaQuery.of(context).size.width * .5,
+                    child: Text(
+                      request.title,
+                      style: AppStyles.titleStyle,
+                      softWrap: true,
+                    )),
               ],
             ),
             CustomSpacers.height10,
@@ -60,8 +66,7 @@ class RequestTile extends StatelessWidget {
                 maxLines: 3,
                 softWrap: true,
                 overflow: TextOverflow.ellipsis,
-                'To maintain state and run initialization code only once in Flutter, utilize a StatefulWidget with initState. initState is called exactly once when the widget is inserted into the tree, ensuring initialization occurs just once',
-                // request.description,
+                request.description,
                 style: AppStyles.roboto_14_500_dark,
               ),
             ),
@@ -80,7 +85,7 @@ class RequestTile extends StatelessWidget {
                   child: Text(
                     softWrap: true,
                     textAlign: TextAlign.start,
-                    "Patiala, Patiala Tahsil, Patiala District, Punjab, 147001, India",
+                    request.fullAddress,
                     style: AppStyles.activetabStyle,
                   ),
                 ),
@@ -88,33 +93,34 @@ class RequestTile extends StatelessWidget {
             ),
             Row(
               children: [
-                Text('1/04/2024, 8:40 AM', style: AppStyles.ts_14_grey),
+                Text(request.dateTime, style: AppStyles.ts_14_grey),
                 Spacer(),
                 Container(
-                    alignment: Alignment.center,
-                    // height: 30.h,
-                    // width: 70.w,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: DEFAULT_Horizontal_PADDING, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Opened',
-                          style: AppStyles.roboto_14_500_light,
-                        ),
-                        CustomSpacers.width4,
-                        Icon(
-                          Icons.update,
-                          color: AppColors.white,
-                        )
-                      ],
-                    ))
+                  alignment: Alignment.center,
+                  // height: 30.h,
+                  // width: 70.w,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: DEFAULT_Horizontal_PADDING, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Opened',
+                        style: AppStyles.roboto_14_500_light,
+                      ),
+                      CustomSpacers.width4,
+                      Icon(
+                        Icons.update,
+                        color: AppColors.white,
+                      )
+                    ],
+                  ),
+                )
               ],
             )
           ],

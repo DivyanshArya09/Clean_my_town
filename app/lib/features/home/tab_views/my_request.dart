@@ -64,7 +64,7 @@ class _MyRequestsState extends State<MyRequests> {
 
   _buildRequestBody(List<RequestModel> requests) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       height: double.maxFinite,
       width: double.maxFinite,
       color: AppColors.lightGray,
@@ -90,7 +90,10 @@ class _MyRequestsState extends State<MyRequests> {
       child: ListView.separated(
         itemCount: requests.length,
         itemBuilder: (context, index) {
-          return RequestTile(request: requests[index]);
+          return Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 24 : 0),
+            child: RequestTile(request: requests[index]),
+          );
         },
         separatorBuilder: (BuildContext context, int index) {
           return CustomSpacers.height12;
