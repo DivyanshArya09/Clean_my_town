@@ -55,7 +55,7 @@ class AppStyles {
   );
   static const titleStyle = TextStyle(
     color: AppColors.black,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: FontWeight.w500,
   );
   static const appBarStyle = TextStyle(

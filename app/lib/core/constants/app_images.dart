@@ -4,4 +4,5 @@ class AppImages {
   static const markerIcon = 'assets/images/marker.png';
   static const loading = 'assets/images/loading2.gif';
   static const gettingLocation = 'assets/images/location.gif';
+  static const bgImg = 'assets/images/signupbg.jpeg';
 }

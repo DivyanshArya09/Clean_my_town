@@ -1,3 +1,4 @@
+import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/helpers/helper.dart';
 import 'package:app/core/styles/app_styles.dart';
@@ -52,7 +53,6 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: BlocConsumer<SignUpBloc, SignUpState>(
         bloc: _refBloc,
         buildWhen: (previous, current) =>
@@ -96,79 +96,103 @@ class _SignUpPageState extends State<SignUpPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-                horizontal: DEFAULT_Horizontal_PADDING,
-                vertical: DEFAULT_VERTICAL_PADDING),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomSpacers.height36,
-                  Text(
-                    'Ready to join the clean revolution?\nSign up now and be\na hero for our town!',
-                    style: AppStyles.headingDark,
+          return SizedBox(
+            height: double.infinity,
+            width: double.infinity,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    height: double.infinity,
+                    width: double.maxFinite,
+                    child: Image.asset(
+                      height: MediaQuery.of(context).size.height,
+                      width: double.infinity,
+                      AppImages.bgImg,
+                      fit: BoxFit.fill,
+                    ),
                   ),
-                  CustomSpacers.height16,
-                  CustomTextField(
-                    hint: 'Enter your name',
-                    controller: _nameTC,
+                ),
+                SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: DEFAULT_Horizontal_PADDING,
+                      vertical: DEFAULT_VERTICAL_PADDING),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomSpacers.height36,
+                        Text(
+                          'Ready to join the clean revolution?\nSign up now and be\na hero for our town!',
+                          style: AppStyles.headingDark,
+                        ),
+                        CustomSpacers.height16,
+                        CustomTextField(
+                          hint: 'Enter your name',
+                          controller: _nameTC,
+                        ),
+                        CustomSpacers.height16,
+                        CustomTextField(
+                          hint: 'Enter your Email',
+                          controller: _emailTC,
+                          validator: (email) {
+                            return Validators.isValidEmail(email);
+                          },
+                        ),
+                        CustomSpacers.height16,
+                        CustomTextField(
+                          isPasswordField: true,
+                          hint: 'Enter your password',
+                          validator: (val) {
+                            return Validators.isValidPassword(val);
+                          },
+                          controller: _passTC,
+                        ),
+                        CustomSpacers.height16,
+                        CustomTextField(
+                          isPasswordField: true,
+                          validator: (val) {
+                            return Validators.isValidPassword(val,
+                                confirmPassword: _confirmPassTC.text);
+                          },
+                          hint: 'Confirm your password',
+                          controller: _confirmPassTC,
+                        ),
+                        CustomSpacers.height32,
+                        CustomButton(
+                          btnTxt: 'Sign Up',
+                          onTap: () async {
+                            if (_formKey.currentState!.validate()) {
+                              await SharedPreferencesHelper.saveString(
+                                  _emailTC.text);
+                              _refBloc.add(
+                                SignUpWithEmailAndPassword(
+                                    email: _emailTC.text,
+                                    password: _passTC.text,
+                                    name: _nameTC.text),
+                              );
+                            }
+                          },
+                        ),
+                        OrWidget(
+                          ontap: () {
+                            CustomNavigator.pushTo(
+                              context,
+                              AppPages.login,
+                            );
+                          },
+                          txt: 'Login',
+                        ),
+                      ],
+                    ),
                   ),
-                  CustomSpacers.height16,
-                  CustomTextField(
-                    hint: 'Enter your Email',
-                    controller: _emailTC,
-                    validator: (email) {
-                      return Validators.isValidEmail(email);
-                    },
-                  ),
-                  CustomSpacers.height16,
-                  CustomTextField(
-                    isPasswordField: true,
-                    hint: 'Enter your password',
-                    validator: (val) {
-                      return Validators.isValidPassword(val);
-                    },
-                    controller: _passTC,
-                  ),
-                  CustomSpacers.height16,
-                  CustomTextField(
-                    isPasswordField: true,
-                    validator: (val) {
-                      return Validators.isValidPassword(val,
-                          confirmPassword: _confirmPassTC.text);
-                    },
-                    hint: 'Confirm your password',
-                    controller: _confirmPassTC,
-                  ),
-                  CustomSpacers.height32,
-                  CustomButton(
-                    btnTxt: 'Sign Up',
-                    onTap: () async {
-                      print('------------------->${_emailTC.text}');
-                      if (_formKey.currentState!.validate()) {
-                        await SharedPreferencesHelper.saveString(_emailTC.text);
-                        _refBloc.add(
-                          SignUpWithEmailAndPassword(
-                              email: _emailTC.text,
-                              password: _passTC.text,
-                              name: _nameTC.text),
-                        );
-                      }
-                    },
-                  ),
-                  OrWidget(
-                    ontap: () {
-                      CustomNavigator.pushTo(
-                        context,
-                        AppPages.login,
-                      );
-                    },
-                    txt: 'Login',
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },

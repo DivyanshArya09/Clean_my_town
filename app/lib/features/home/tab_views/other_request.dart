@@ -81,13 +81,14 @@ class _OthersRequestState extends State<OthersRequest> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                'There is no requests\nin your area',
+                'There is no active requests\nin your area...',
                 textAlign: TextAlign.center,
                 style: AppStyles.titleStyle,
               ),
+              CustomSpacers.height30,
               SvgPicture.asset(
                 AppImages.volunteers,
-                height: MediaQuery.of(context).size.height * 0.5,
+                height: MediaQuery.of(context).size.height * 0.35,
               ),
               CustomSpacers.height16,
             ],
