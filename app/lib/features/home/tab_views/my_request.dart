@@ -5,6 +5,7 @@ import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
+import 'package:app/features/add_request/presentation/pages/request_detail_page.dart';
 import 'package:app/features/home/widgets/request_tile.dart';
 import 'package:app/features/shared/loading_page.dart';
 import 'package:app/route/app_pages.dart';
@@ -22,19 +23,26 @@ class MyRequests extends StatefulWidget {
   State<MyRequests> createState() => _MyRequestsState();
 }
 
-class _MyRequestsState extends State<MyRequests> {
+class _MyRequestsState extends State<MyRequests>
+    with AutomaticKeepAliveClientMixin {
   final _reqRefBloc = RequestBloc();
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _reqRefBloc.add(GetMyRequestEvent());
-    });
     super.initState();
   }
 
   @override
+  void didChangeDependencies() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _reqRefBloc.add(GetMyRequestEvent());
+    });
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocBuilder<RequestBloc, RequestState>(
       bloc: _reqRefBloc,
       builder: (context, state) {
@@ -92,7 +100,17 @@ class _MyRequestsState extends State<MyRequests> {
         itemBuilder: (context, index) {
           return Padding(
             padding: EdgeInsets.only(top: index == 0 ? 24 : 0),
-            child: RequestTile(request: requests[index]),
+            child: RequestTile(
+              request: requests[index],
+              onTap: () => CustomNavigator.pushTo(
+                context,
+                AppPages.requestDetailPage,
+                arguments: {
+                  'request': requests[index],
+                  'requestType': RequestType.myRequest,
+                },
+              ),
+            ),
           );
         },
         separatorBuilder: (BuildContext context, int index) {
@@ -165,4 +183,7 @@ class _MyRequestsState extends State<MyRequests> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

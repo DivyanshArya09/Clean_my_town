@@ -1,5 +1,5 @@
 import 'package:app/core/constants/app_colors.dart';
-import 'package:app/features/auth/presentation/pages/sign_up_page.dart';
+import 'package:app/features/home/presentation/auth_gate.dart';
 import 'package:app/firebase_options.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child: SignUpPage(),
+      child: const AuthGate(),
     );
     //
   }

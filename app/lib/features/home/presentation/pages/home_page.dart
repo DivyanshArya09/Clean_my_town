@@ -18,8 +18,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with AutomaticKeepAliveClientMixin {
+class _HomePageState extends State<HomePage> {
   final _geofenceBloc = GeolocatorBloc();
   final FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
 
@@ -32,17 +31,20 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+  }
 
+  @override
+  void didChangeDependencies() {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         _geofenceBloc.add(GetCurrentLatLang());
       },
     );
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -122,7 +124,4 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

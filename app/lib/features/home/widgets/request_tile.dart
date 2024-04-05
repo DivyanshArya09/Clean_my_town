@@ -11,123 +11,130 @@ import '../../../core/styles/app_styles.dart';
 
 class RequestTile extends StatelessWidget {
   final RequestModel request;
-  const RequestTile({super.key, required this.request});
+  final VoidCallback onTap;
+  const RequestTile({super.key, required this.request, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 4,
-      borderRadius: BorderRadius.circular(5),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  height: 70.h,
-                  width: 70.h,
-                  decoration: BoxDecoration(
-                    color: AppColors.darkGray,
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: CachedNetworkImage(
-                      // placeholder: (context, url) => Icon(Icons.photo),
-                      imageUrl: request.image,
-                      fit: BoxFit.cover,
-                      errorListener: (value) {},
-                      errorWidget: (context, url, error) {
-                        return Icon(Icons.photo, color: AppColors.white);
-                      },
+    return InkWell(
+      onTap: onTap,
+      child: Material(
+        elevation: 4,
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5),
+            color: Colors.white,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    height: 70.h,
+                    width: 70.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.darkGray,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(50),
+                      child: CachedNetworkImage(
+                        // placeholder: (context, url) => Icon(Icons.photo),
+                        imageUrl: request.image,
+                        fit: BoxFit.cover,
+                        errorListener: (value) {},
+                        errorWidget: (context, url, error) {
+                          return Icon(Icons.photo, color: AppColors.white);
+                        },
+                      ),
                     ),
                   ),
-                ),
-                CustomSpacers.width14,
-                SizedBox(
-                    width: MediaQuery.of(context).size.width * .5,
-                    child: Text(
-                      request.title,
-                      style: AppStyles.titleStyle,
-                      softWrap: true,
-                    )),
-              ],
-            ),
-            CustomSpacers.height10,
-            SizedBox(
-              width: MediaQuery.of(context).size.width * .9,
-              child: Text(
-                maxLines: 3,
-                softWrap: true,
-                overflow: TextOverflow.ellipsis,
-                request.description,
-                style: AppStyles.roboto_14_500_dark,
+                  CustomSpacers.width14,
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width * .5,
+                      child: Text(
+                        request.title,
+                        style: AppStyles.titleStyle,
+                        softWrap: true,
+                      )),
+                ],
               ),
-            ),
-            CustomSpacers.height10,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.asset(
-                  AppImages.markerIcon,
-                  height: 30.h,
+              CustomSpacers.height10,
+              SizedBox(
+                width: MediaQuery.of(context).size.width * .9,
+                child: Text(
+                  maxLines: 3,
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                  request.description,
+                  style: AppStyles.roboto_14_500_dark,
                 ),
-                CustomSpacers.width10,
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * .7,
-                  child: Text(
-                    softWrap: true,
-                    textAlign: TextAlign.start,
-                    request.fullAddress,
-                    style: AppStyles.activetabStyle,
+              ),
+              CustomSpacers.height10,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    AppImages.markerIcon,
+                    height: 30.h,
                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(request.dateTime, style: AppStyles.ts_14_grey),
-                Spacer(),
-                Container(
-                  alignment: Alignment.center,
-                  // height: 30.h,
-                  // width: 70.w,
-                  padding: EdgeInsets.symmetric(
-                      horizontal: DEFAULT_Horizontal_PADDING, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(50),
+                  CustomSpacers.width10,
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * .7,
+                    child: Text(
+                      softWrap: true,
+                      textAlign: TextAlign.start,
+                      request.fullAddress,
+                      style: AppStyles.activetabStyle,
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Opened',
-                        style: AppStyles.roboto_14_500_light,
-                      ),
-                      CustomSpacers.width4,
-                      Icon(
-                        Icons.update,
-                        color: AppColors.white,
-                      )
-                    ],
-                  ),
-                )
-              ],
-            )
-          ],
+                ],
+              ),
+              Row(
+                children: [
+                  Text(request.dateTime, style: AppStyles.ts_14_grey),
+                  Spacer(),
+                  statusTab(request.status),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+statusTab(bool status) {
+  return Container(
+    width: 120.w,
+    height: 40.h,
+    alignment: Alignment.center,
+    padding: EdgeInsets.symmetric(horizontal: DEFAULT_Horizontal_PADDING),
+    decoration: BoxDecoration(
+      color: status ? AppColors.primary : AppColors.err,
+      borderRadius: BorderRadius.circular(50),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          status ? 'Opened' : 'Closed',
+          style: AppStyles.roboto_14_500_light,
+        ),
+        CustomSpacers.width4,
+        Icon(
+          Icons.update,
+          color: AppColors.white,
+        )
+      ],
+    ),
+  );
 }
 
 /**ListTile(
