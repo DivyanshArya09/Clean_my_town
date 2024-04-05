@@ -7,6 +7,7 @@ import 'package:app/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:app/features/auth/presentation/pages/verfy_email_page.dart';
 import 'package:app/features/home/presentation/auth_gate.dart';
 import 'package:app/features/home/presentation/pages/home_page.dart';
+import 'package:app/features/profile/presentation/pages/profile_page.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:flutter/material.dart';
 
@@ -17,9 +18,7 @@ class CustomNavigator {
     switch (settings.name) {
       case AppPages.home:
         return MaterialPageRoute(
-          builder: (context) => HomePage(
-            fetch: settings.arguments as bool,
-          ),
+          builder: (context) => HomePage(),
           settings: settings,
         );
       case AppPages.initial:
@@ -49,6 +48,11 @@ class CustomNavigator {
           builder: (context) => const VerfyEmail(),
           settings: settings,
         );
+      case AppPages.profilePage:
+        return MaterialPageRoute(
+          builder: (context) => const ProfilePage(),
+          settings: settings,
+        );
       case AppPages.requestDetailPage:
         return MaterialPageRoute(
           builder: (context) {
@@ -65,9 +69,7 @@ class CustomNavigator {
 
       default:
         return MaterialPageRoute(
-          builder: (context) => HomePage(
-            fetch: settings.arguments as bool,
-          ),
+          builder: (context) => LoginPage(),
         );
     }
   }

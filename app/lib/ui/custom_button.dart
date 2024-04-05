@@ -9,10 +9,12 @@ class CustomButton extends StatelessWidget {
   final String btnTxt;
   final double btnHeight;
   final double btnWidth;
+  final double? btnRadius;
   const CustomButton(
       {super.key,
       required this.btnTxt,
       required this.onTap,
+      this.btnRadius = DEFAULT_BORDER_RADIUS,
       this.btnWidth = DEFAULT_BUTTON_WIDTH,
       this.btnHeight = DEFAULT_BUTTON_HEIGHT});
 
@@ -25,7 +27,8 @@ class CustomButton extends StatelessWidget {
         width: btnWidth,
         // padding: const  EdgeInsetsDirectional.symmetric(vertical: 16.0, horizontal: 24.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(DEFAULT_BORDER_RADIUS),
+          borderRadius:
+              BorderRadius.circular(btnRadius ?? DEFAULT_BORDER_RADIUS),
           color: AppColors.primary,
         ),
         height: btnHeight,

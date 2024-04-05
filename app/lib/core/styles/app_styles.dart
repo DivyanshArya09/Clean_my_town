@@ -27,6 +27,11 @@ class AppStyles {
     fontSize: 18,
     fontWeight: FontWeight.w500,
   );
+  static TextStyle roboto_16_400_dark = TextStyle(
+    color: AppColors.black,
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+  );
   static TextStyle headingLight = TextStyle(
     color: AppColors.white,
     fontSize: 21,

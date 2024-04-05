@@ -69,7 +69,7 @@ class RealtimeDBHelper {
   Future<Either<Failure, List<RequestModel>>> getRequests() async {
     try {
       UserModel user = await fireStoreHelpers.getUser();
-      List<Future<DataSnapshot>> futures = user.requests
+      List<Future<DataSnapshot>> futures = await user.requests
           .map((e) => db.child(e).once().then((event) => event.snapshot))
           .toList();
       List<DataSnapshot?> snapshots = await Future.wait(futures);
@@ -81,6 +81,7 @@ class RealtimeDBHelper {
       }
       return Right(requests);
     } catch (e) {
+      print('err occured here=========================>');
       return Left(ServerFailure(message: e.toString()));
     }
   }

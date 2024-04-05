@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/utils/user_helpers.dart';
+import 'package:app/core/helpers/helper.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dartz/dartz.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:crypto/crypto.dart';
 
 class AuthHelper {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -77,8 +77,8 @@ class AuthHelper {
     try {
       final user = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-
-      // return Right();
+      await SharedPreferencesHelper.saveString(email);
+      return Right(email);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return const Left(
@@ -98,7 +98,7 @@ class AuthHelper {
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }
-    return const Left(ServerFailure(message: 'Something went wrong'));
+    return Right(email);
   }
 
   Future<void> signOut() async {
