@@ -6,9 +6,10 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImagePickerhelper {
-  static Future<Either<Failure, File?>> pickImage() async {
+  static Future<Either<Failure, File?>> pickImage(
+      {ImageSource source = ImageSource.camera}) async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+      final image = await ImagePicker().pickImage(source: source);
       if (image != null) {
         XFile imageFile = await _compressFile(File(image.path));
         File imageFileFinal = File(imageFile.path);

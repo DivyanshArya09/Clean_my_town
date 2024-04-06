@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:app/core/constants/app_colors.dart';
-import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/core/utils/toast_utils.dart';
+import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,6 +20,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  File? image;
+  final _refBloc = ProfileBloc();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,24 +38,58 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         title: const Text('Profile'),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(
-            horizontal: DEFAULT_Horizontal_PADDING,
-            vertical: DEFAULT_VERTICAL_PADDING),
-        child: SizedBox(
-          width: double.maxFinite,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CustomSpacers.height16,
-              _buildProfilePicture(),
-              CustomSpacers.height16,
-              _buildProfileList(),
-            ],
-          ),
-        ),
+      body: BlocConsumer<ProfileBloc, ProfileState>(
+        bloc: _refBloc,
+        listener: (context, state) {
+          if (state is ImagePickerSuccessState) {
+            image = state.image;
+          }
+          if (state is ImagePickerError) {
+            ToastHelpers.showToast(state.message);
+          }
+
+          if (state is ProfileError) {
+            ToastHelpers.showToast(state.message);
+          }
+
+          if (state is ProfileSuccess) {
+            ToastHelpers.showToast('Profile Updated....');
+          }
+
+          if (state is ImagePickerLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Loading...'),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is ProfileLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(
+                horizontal: DEFAULT_Horizontal_PADDING,
+                vertical: DEFAULT_VERTICAL_PADDING),
+            child: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomSpacers.height16,
+                  _buildProfilePicture(),
+                  CustomSpacers.height16,
+                  _buildProfileList(state),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -61,7 +101,6 @@ class _ProfilePageState extends State<ProfilePage> {
           alignment: Alignment.center,
           height: 120.h,
           width: 120.h,
-          padding: const EdgeInsets.all(8),
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: AppColors.darkGray,
@@ -70,10 +109,15 @@ class _ProfilePageState extends State<ProfilePage> {
             clipBehavior: Clip.none,
             children: [
               Positioned.fill(
-                child: SvgPicture.asset(
-                  AppImages.volunteers,
-                  fit: BoxFit.contain,
-                ),
+                child: image == null
+                    ? Icon(Icons.person, size: 60.h, color: AppColors.white)
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Image.file(
+                          image!,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
               ),
               Positioned(
                 bottom: -7,
@@ -106,14 +150,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _buildProfileList() {
+  _buildProfileList(ProfileState state) {
     return Column(
       children: [
         CustomButton(
           btnWidth: 200.w,
           btnRadius: 50,
-          btnTxt: 'Edit Profile',
-          onTap: () {},
+          btnTxt: image != null && state is! ProfileSuccess
+              ? 'Save Profile'
+              : 'Edit Profile',
+          onTap: () {
+            image != null && state is! ProfileSuccess
+                ? _refBloc.add(SaveProfile(image: image!))
+                : null;
+          },
         ),
         CustomSpacers.height40,
         _buildProfileTile(
@@ -195,12 +245,26 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CustomSpacers.height16,
               ListTile(
+                onTap: () {
+                  Navigator.pop(context);
+                  _refBloc.add(
+                    PickImageEvent(
+                      imageSource: ImageSource.camera,
+                    ),
+                  );
+                },
                 leading: Icon(
                   Icons.camera_alt,
                 ),
                 title: Text('Camera'),
               ),
               ListTile(
+                onTap: () {
+                  Navigator.pop(context);
+                  _refBloc.add(
+                    PickImageEvent(imageSource: ImageSource.gallery),
+                  );
+                },
                 leading: Icon(
                   Icons.image,
                 ),

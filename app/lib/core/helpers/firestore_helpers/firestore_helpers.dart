@@ -31,8 +31,21 @@ class FireStoreHelpers {
       print(
           "Error adding string to requests array: $error---------------------->");
     });
-
     return docID.toString();
+  }
+
+  Future<void> updateRrofilePictureInFirestore(String imageLink) async {
+    String? docID = await SharedPreferencesHelper.getString();
+    DocumentReference docRef =
+        FirebaseFirestore.instance.collection('users').doc(docID);
+    docRef.update({
+      'profilePicture': imageLink,
+    }).then((value) {
+      print("String added to requests array--------------------------->");
+    }).catchError((error) {
+      print(
+          "Error adding string to requests array: $error---------------------->");
+    });
   }
 
   Future<void> updatelocation(String town) async {
