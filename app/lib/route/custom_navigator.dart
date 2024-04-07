@@ -18,7 +18,9 @@ class CustomNavigator {
     switch (settings.name) {
       case AppPages.home:
         return MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => HomePage(
+            locationModel: settings.arguments as LocationModel,
+          ),
           settings: settings,
         );
       case AppPages.initial:

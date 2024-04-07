@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:app/core/constants/app_colors.dart';
@@ -5,12 +6,15 @@ import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
+import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+
+enum SheetType { PickImage, EditProfile }
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -22,6 +26,16 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? image;
   final _refBloc = ProfileBloc();
+  UserModel user = UserModel.empty();
+  StreamController<dynamic> _streamController = StreamController<dynamic>();
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _refBloc.add(GetUserEvent());
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,12 +50,21 @@ class _ProfilePageState extends State<ProfilePage> {
             color: AppColors.black,
           ),
         ),
+        actions: [
+          TextButton(
+              onPressed: () {},
+              child: Text(
+                'Save Changes',
+                style: AppStyles.activetabStyle,
+              ))
+        ],
         title: const Text('Profile'),
       ),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         bloc: _refBloc,
         listener: (context, state) {
           if (state is ImagePickerSuccessState) {
+            _streamController.add(state.image);
             image = state.image;
           }
           if (state is ImagePickerError) {
@@ -56,6 +79,15 @@ class _ProfilePageState extends State<ProfilePage> {
             ToastHelpers.showToast('Profile Updated....');
           }
 
+          if (state is GetUserErrorState) {
+            ToastHelpers.showToast(state.message);
+          }
+
+          if (state is GetUserSuccessState) {
+            user = state.user;
+            _streamController.add(state.user.profilePicture);
+          }
+
           if (state is ImagePickerLoading) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -65,11 +97,20 @@ class _ProfilePageState extends State<ProfilePage> {
           }
         },
         builder: (context, state) {
-          if (state is ProfileLoading) {
+          if (state is ProfileLoading || state is GetUserLoadingState) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
+
+          if (state is GetUserErrorState ||
+              state is ImagePickerError ||
+              state is ProfileError) {
+            return const Center(
+              child: Text('Something went wrong'),
+            );
+          }
+          // if (state is GetUserSuccessState) {
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(
@@ -82,19 +123,26 @@ class _ProfilePageState extends State<ProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomSpacers.height16,
-                  _buildProfilePicture(),
+                  _buildProfilePicture(user.name, user.email),
                   CustomSpacers.height16,
                   _buildProfileList(state),
                 ],
               ),
             ),
           );
+          // }
+          // return const Center(
+          //   child: Text('Something went wrong'),
+          // );
         },
       ),
     );
   }
 
-  _buildProfilePicture() {
+  _buildProfilePicture(
+    String? name,
+    String? email,
+  ) {
     return Column(
       children: [
         Container(
@@ -109,21 +157,51 @@ class _ProfilePageState extends State<ProfilePage> {
             clipBehavior: Clip.none,
             children: [
               Positioned.fill(
-                child: image == null
-                    ? Icon(Icons.person, size: 60.h, color: AppColors.white)
-                    : ClipRRect(
+                child: StreamBuilder(
+                  stream: _streamController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return ClipRRect(
                         borderRadius: BorderRadius.circular(100),
-                        child: Image.file(
-                          image!,
-                          fit: BoxFit.fill,
+                        child: InkWell(
+                          onTap: () => showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              contentPadding: EdgeInsets.zero,
+                              content: snapshot.data is File
+                                  ? Image.file(
+                                      snapshot.data!,
+                                      fit: BoxFit.fill,
+                                    )
+                                  : Image.network(
+                                      snapshot.data as String,
+                                    ),
+                            ),
+                          ),
+                          child: snapshot.data is File
+                              ? Image.file(
+                                  snapshot.data!,
+                                  fit: BoxFit.fill,
+                                )
+                              : (snapshot.data as String).isNotEmpty
+                                  ? Image.network(
+                                      snapshot.data as String,
+                                    )
+                                  : Icon(Icons.person,
+                                      size: 60.h, color: AppColors.white),
                         ),
-                      ),
+                      );
+                    }
+                    return Icon(Icons.person,
+                        size: 60.h, color: AppColors.white);
+                  },
+                ),
               ),
               Positioned(
                 bottom: -7,
                 right: 0,
                 child: GestureDetector(
-                  onTap: () => _showBottomSheet(),
+                  onTap: () => _showBottomSheet(SheetType.PickImage),
                   child: Container(
                     alignment: Alignment.center,
                     decoration: const BoxDecoration(
@@ -144,8 +222,8 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         CustomSpacers.height12,
-        Text('John Doe', style: AppStyles.roboto_16_500_dark),
-        Text('5qoZT@example.com', style: AppStyles.roboto_16_400_dark),
+        Text(name ?? 'No Name', style: AppStyles.roboto_16_500_dark),
+        Text(email!, style: AppStyles.roboto_16_400_dark),
       ],
     );
   }
@@ -162,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
           onTap: () {
             image != null && state is! ProfileSuccess
                 ? _refBloc.add(SaveProfile(image: image!))
-                : null;
+                : _showBottomSheet(SheetType.EditProfile);
           },
         ),
         CustomSpacers.height40,
@@ -235,7 +313,39 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _showBottomSheet() {
+  _showDialog() {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        // contentPadding: EdgeInsets.zero,
+        title: Text(
+          'Are you sure you want to remove your profile picture?',
+          style: AppStyles.roboto_16_500_dark,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: AppStyles.activetabStyle,
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Remove',
+              style: AppStyles.activetabStyle,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  _showBottomSheet(SheetType type) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -244,32 +354,57 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             children: [
               CustomSpacers.height16,
-              ListTile(
-                onTap: () {
-                  Navigator.pop(context);
-                  _refBloc.add(
-                    PickImageEvent(
-                      imageSource: ImageSource.camera,
-                    ),
-                  );
-                },
-                leading: Icon(
-                  Icons.camera_alt,
+              if (type == SheetType.EditProfile) ...[
+                ListTile(
+                  onTap: () {
+                    // Navigator.pop(context);
+                    // _refBloc.add(
+                    //   PickImageEvent(
+                    //     imageSource: ImageSource.camera,
+                    //   ),
+                    // );
+                  },
+                  leading: Icon(
+                    Icons.edit,
+                  ),
+                  title: Text('Change name'),
                 ),
-                title: Text('Camera'),
-              ),
-              ListTile(
-                onTap: () {
-                  Navigator.pop(context);
-                  _refBloc.add(
-                    PickImageEvent(imageSource: ImageSource.gallery),
-                  );
-                },
-                leading: Icon(
-                  Icons.image,
+                ListTile(
+                  onTap: () => _showDialog(),
+                  leading: Icon(
+                    Icons.delete,
+                  ),
+                  title: Text('Remove profile picture'),
                 ),
-                title: Text('Gallery'),
-              ),
+              ],
+              if (type == SheetType.PickImage) ...[
+                ListTile(
+                  onTap: () {
+                    Navigator.pop(context);
+                    _refBloc.add(
+                      PickImageEvent(
+                        imageSource: ImageSource.camera,
+                      ),
+                    );
+                  },
+                  leading: Icon(
+                    Icons.camera_alt,
+                  ),
+                  title: Text('Camera'),
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.pop(context);
+                    _refBloc.add(
+                      PickImageEvent(imageSource: ImageSource.gallery),
+                    );
+                  },
+                  leading: Icon(
+                    Icons.image,
+                  ),
+                  title: Text('Gallery'),
+                ),
+              ]
             ],
           ),
         );

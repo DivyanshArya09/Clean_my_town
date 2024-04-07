@@ -18,3 +18,5 @@ final class SaveProfile extends ProfileEvent {
   final File image;
   SaveProfile({required this.image});
 }
+
+final class GetUserEvent extends ProfileEvent {}

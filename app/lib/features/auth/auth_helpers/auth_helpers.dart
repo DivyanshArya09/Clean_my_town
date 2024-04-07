@@ -49,6 +49,12 @@ class AuthHelper {
       firebase_auth.UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
 
+      final user = userCredential.user;
+      if (user != null) {
+        print("========================> ${user.uid}");
+        // return const Right(null);
+      }
+
       return const Right(null);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -75,8 +81,14 @@ class AuthHelper {
   Future<Either<Failure, String>> signInEmailAndPassword(
       String email, String password) async {
     try {
-      final user = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      firebase_auth.UserCredential userCredential = await _auth
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      final user = userCredential.user;
+      if (user != null) {
+        print("========================> ${user.uid}");
+        // return Right(email);
+      }
       await SharedPreferencesHelper.saveString(email);
       return Right(email);
     } on FirebaseAuthException catch (e) {

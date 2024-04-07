@@ -16,17 +16,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MyRequests extends StatefulWidget {
+  final RequestBloc bloc;
   final LocationModel location;
-  const MyRequests({super.key, required this.location});
+  const MyRequests({super.key, required this.location, required this.bloc});
 
   @override
   State<MyRequests> createState() => _MyRequestsState();
 }
 
-class _MyRequestsState extends State<MyRequests>
-    with AutomaticKeepAliveClientMixin {
-  final _reqRefBloc = RequestBloc();
-
+class _MyRequestsState extends State<MyRequests> {
   @override
   void initState() {
     super.initState();
@@ -34,17 +32,13 @@ class _MyRequestsState extends State<MyRequests>
 
   @override
   void didChangeDependencies() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _reqRefBloc.add(GetMyRequestEvent());
-    });
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return BlocBuilder<RequestBloc, RequestState>(
-      bloc: _reqRefBloc,
+      bloc: widget.bloc,
       builder: (context, state) {
         if (state is MyRequestEmpty) {
           return _buildEmptyBody();
@@ -183,7 +177,4 @@ class _MyRequestsState extends State<MyRequests>
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

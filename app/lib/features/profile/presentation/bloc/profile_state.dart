@@ -25,3 +25,15 @@ final class ImagePickerSuccessState extends ProfileState {
   final File image;
   ImagePickerSuccessState({required this.image});
 }
+
+final class GetUserSuccessState extends ProfileState {
+  final UserModel user;
+  GetUserSuccessState({required this.user});
+}
+
+final class GetUserErrorState extends ProfileState {
+  final String message;
+  GetUserErrorState({required this.message});
+}
+
+final class GetUserLoadingState extends ProfileState {}

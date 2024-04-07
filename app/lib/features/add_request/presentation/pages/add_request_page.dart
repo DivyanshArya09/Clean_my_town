@@ -9,7 +9,6 @@ import 'package:app/core/utils/date_time_formatter.dart';
 import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
-import 'package:app/features/add_request/presentation/bloc/geolocator_bloc.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
 import 'package:app/features/shared/loading_page.dart';
 import 'package:app/ui/custom_button.dart';
@@ -27,7 +26,7 @@ class AddRequestPage extends StatefulWidget {
 }
 
 class _AddRequestPageState extends State<AddRequestPage> {
-  final _geolocatorRefBloc = GeolocatorBloc();
+  // final _geolocatorRefBloc = GeolocatorBloc();
   final _requestRefBloc = RequestBloc();
   late TextEditingController _titleTC, _locationTC, _descriptionTC;
   late DraggableScrollableController _sheetController;
@@ -35,7 +34,7 @@ class _AddRequestPageState extends State<AddRequestPage> {
   RequestModel reqModel = RequestModel.empty();
 
   File? image;
-  String town = '';
+  // String town = '';
 
   @override
   void initState() {
@@ -53,20 +52,20 @@ class _AddRequestPageState extends State<AddRequestPage> {
       appBar: AppBar(),
       body: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (_) => _geolocatorRefBloc),
+          // BlocProvider(create: (_) => _geolocatorRefBloc),
           BlocProvider(create: (_) => _requestRefBloc),
         ],
         child: MultiBlocListener(
           listeners: [
-            BlocListener<GeolocatorBloc, GeolocatorState>(
-              listener: (context, state) {
-                if (state is GeolocatorError) {
-                  ToastHelpers.showToast(state.error);
-                } else if (state is GeolocatorSuccess) {
-                  town = state.locationModel.address.town;
-                }
-              },
-            ),
+            // BlocListener<GeolocatorBloc, GeolocatorState>(
+            //   listener: (context, state) {
+            //     if (state is GeolocatorError) {
+            //       ToastHelpers.showToast(state.error);
+            //     } else if (state is GeolocatorSuccess) {
+            //       town = state.locationModel.address.town;
+            //     }
+            //   },
+            // ),
             BlocListener<RequestBloc, RequestState>(
               listener: (context, state) {
                 if (state is RequestError) {

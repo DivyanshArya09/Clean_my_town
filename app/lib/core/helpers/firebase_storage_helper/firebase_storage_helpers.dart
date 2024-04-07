@@ -32,7 +32,7 @@ class FireBaseStorageHelper {
       final ref = firebase_storage.FirebaseStorage.instance.ref().child(path);
       await ref.putFile(imagePath);
       final imageUrl = await ref.getDownloadURL();
-      await fireStoreHelpers.updateRrofilePictureInFirestore(imageUrl);
+      await fireStoreHelpers.updateUser(['profilePicture'], [imageUrl]);
       return Right(imageUrl);
     } catch (e) {
       print('Error uploading image: $e');

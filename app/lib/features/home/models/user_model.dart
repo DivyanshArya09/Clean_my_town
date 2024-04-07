@@ -4,6 +4,7 @@ class UserModel {
   final String password;
   final List<String> requests;
   final String location;
+  final String profilePicture;
 
   UserModel({
     required this.name,
@@ -11,6 +12,7 @@ class UserModel {
     required this.password,
     required this.requests,
     required this.location,
+    required this.profilePicture,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -20,6 +22,7 @@ class UserModel {
       password: map['password'] ?? '',
       requests: List<String>.from(map['requests'] ?? []),
       location: map['location'] ?? '',
+      profilePicture: map['profilePicture'] ?? '',
     );
   }
 
@@ -30,6 +33,7 @@ class UserModel {
       password: '',
       requests: [],
       location: '',
+      profilePicture: '',
     );
   }
 
@@ -41,6 +45,7 @@ class UserModel {
       'password': password,
       'requests': requests,
       'location': location,
+      'profilePicture': profilePicture,
     };
   }
 
@@ -51,6 +56,7 @@ class UserModel {
     String? password,
     List<String>? requests,
     String? location,
+    String? profilePicture,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -58,6 +64,7 @@ class UserModel {
       password: password ?? this.password,
       requests: requests ?? this.requests,
       location: location ?? this.location,
+      profilePicture: profilePicture ?? this.profilePicture,
     );
   }
 }

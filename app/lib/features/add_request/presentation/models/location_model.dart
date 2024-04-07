@@ -23,10 +23,10 @@ class LocationModel {
 
   factory LocationModel.fromJson(Map<String, dynamic> json) {
     return LocationModel(
-      placeId: json['place_id'] ?? '',
+      placeId: json['place_id'] ?? 0,
       licence: json['licence'] ?? '',
       osmType: json['osm_type'] ?? '',
-      osmId: json['osm_id'] ?? '',
+      osmId: json['osm_id'] ?? 0,
       lat: double.parse(json['lat']),
       lon: double.parse(json['lon']),
       displayName: json['display_name'] ?? '',

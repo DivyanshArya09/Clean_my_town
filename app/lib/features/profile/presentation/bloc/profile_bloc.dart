@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
+import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/core/helpers/image_picker_helper/image_picker_helper.dart';
+import 'package:app/features/home/models/user_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
@@ -10,6 +12,7 @@ part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+  FireStoreHelpers _fireStoreHelpers = FireStoreHelpers();
   FireBaseStorageHelper _fireBaseStorageHelper = FireBaseStorageHelper();
   ProfileBloc() : super(ProfileInitial()) {
     on<PickImageEvent>(
@@ -44,6 +47,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         );
       },
     );
+
     on<SaveProfile>(
       (event, emit) async {
         emit(ProfileLoading());
@@ -61,6 +65,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             }
           },
         );
+      },
+    );
+
+    on<GetUserEvent>(
+      (event, emit) async {
+        emit(GetUserLoadingState());
+        try {
+          final result = await _fireStoreHelpers.getUser();
+          emit(GetUserSuccessState(user: result));
+        } catch (e) {
+          emit(GetUserErrorState(message: e.toString()));
+        }
       },
     );
   }

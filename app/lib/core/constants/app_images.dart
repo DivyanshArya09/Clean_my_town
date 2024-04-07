@@ -5,4 +5,5 @@ class AppImages {
   static const loading = 'assets/images/loading2.gif';
   static const gettingLocation = 'assets/images/location.gif';
   static const bgImg = 'assets/images/signupbg.jpeg';
+  static const splashScreenImage = 'assets/images/splashscreenimage.svg';
 }

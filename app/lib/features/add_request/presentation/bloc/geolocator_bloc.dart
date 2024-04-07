@@ -13,46 +13,56 @@ part 'geolocator_state.dart';
 class GeolocatorBloc extends Bloc<GeolocatorEvent, GeolocatorState> {
   LocationHelper locationHelper = LocationHelper();
   FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+
   GeolocatorBloc() : super(GeolocatorInitial()) {
     on<GetLocation>(
       (event, emit) async {
         emit(GeolocatorLoading());
-        final result = await locationHelper.fetchPlace(event.lat, event.long);
-        result.fold(
-          (failure) async {
-            if (failure is NormalFailure) {
-              Map<String, dynamic> location =
-                  await SharedPreferencesHelper.getLocation();
-              emit(GeolocatorSuccess(
-                  locationModel: LocationModel.fromJson(location)));
-            } else {
-              emit(GeolocatorError(error: failure.message ?? ""));
-            }
-          },
-          (r) {
-            fireStoreHelpers
-                .updatelocation(r.address.stateDistrict)
-                .onError((error, stackTrace) => emit(LocationUpdateFailure()));
-            emit(GeolocatorSuccess(locationModel: r));
-            SharedPreferencesHelper.setLocation(
-              r.toMap(),
-            );
-          },
-        );
+        try {
+          final result = await locationHelper.fetchPlace(event.lat, event.long);
+          await result.fold(
+            (failure) async {
+              if (failure is NormalFailure) {
+                final location = await SharedPreferencesHelper.getLocation();
+                location.fold(
+                  (l) => emit(GeolocatorError(
+                      error: l.message ?? 'Failed to get location')),
+                  (r) => emit(
+                    GeolocatorSuccess(
+                      locationModel: LocationModel.fromJson(r),
+                    ),
+                  ),
+                );
+              }
+            },
+            (r) async {
+              emit(GeolocatorSuccess(locationModel: r));
+              try {
+                await fireStoreHelpers.updatelocation(r.address.stateDistrict);
+                SharedPreferencesHelper.setLocation(r.toMap());
+              } catch (error) {
+                emit(LocationUpdateFailure());
+              }
+            },
+          );
+        } catch (error) {
+          emit(GeolocatorError(error: error.toString()));
+        }
       },
     );
 
     on<GetCurrentLatLang>(
       (event, emit) async {
         emit(GeolocatorLoading());
-        LocationManager.getLocation().then(
-          (value) => add(
-            GetLocation(
-              lat: value.latitude,
-              long: value.longitude,
-            ),
-          ),
-        );
+        try {
+          final value = await LocationManager.getLocation();
+          add(GetLocation(
+            lat: value.latitude,
+            long: value.longitude,
+          ));
+        } catch (error) {
+          emit(GeolocatorError(error: error.toString()));
+        }
       },
     );
   }

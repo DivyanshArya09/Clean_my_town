@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:app/core/errors/failures.dart';
+import 'package:dartz/dartz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
@@ -25,13 +27,18 @@ class SharedPreferencesHelper {
     // return prefs
   }
 
-  static Future<Map<String, dynamic>> getLocation() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? jsonMap = await prefs.getString('currentlocation');
-    if (jsonMap != null) {
-      return jsonDecode(jsonMap);
-    } else {
-      return {};
+  static Future<Either<Failure, Map<String, dynamic>>> getLocation() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? jsonMap = await prefs.getString('currentlocation');
+
+      if (jsonMap != null) {
+        return Right(jsonDecode(jsonMap));
+      } else {
+        return Left(CacheFailure(message: 'No location found'));
+      }
+    } catch (e) {
+      return Left(CacheFailure(message: e.toString()));
     }
   }
 

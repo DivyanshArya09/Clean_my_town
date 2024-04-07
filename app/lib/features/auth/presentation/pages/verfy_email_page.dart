@@ -5,7 +5,6 @@ import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
-import 'package:app/features/home/presentation/pages/home_page.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -86,7 +85,7 @@ class _VerfyEmailState extends State<VerfyEmail> {
               ),
             ),
           )
-        : HomePage();
+        : Container();
   }
 
   Future _sendEmailVerification() async {
