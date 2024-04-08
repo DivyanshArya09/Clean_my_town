@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
 import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/core/helpers/image_picker_helper/image_picker_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
+import 'package:app/features/profile/presentation/model/profile_model.dart';
+import 'package:app/features/utils/overlay_manager.dart';
 import 'package:bloc/bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
@@ -50,23 +53,53 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     on<SaveProfile>(
       (event, emit) async {
-        emit(ProfileLoading());
-        final result =
-            await _fireBaseStorageHelper.uploadProfilePicture(event.image);
-        result.fold(
-          (l) => emit(
-            ProfileError(message: l.message ?? 'Failed to upload image'),
-          ),
-          (r) {
+        OverlayManager.showLoader(opacity: 0.5, color: AppColors.white);
+
+        if (event.profileModel.image != null &&
+            event.profileModel.image is File) {
+          final result = await _fireBaseStorageHelper.uploadProfilePicture(
+            event.profileModel.image!,
+          );
+
+          result.fold((l) {
+            OverlayManager.hideOverlay();
+            emit(
+              ProfileError(message: l.message ?? 'Failed to upload image'),
+            );
+          }, (r) async {
             if (r.isNotEmpty) {
-              emit(ProfileSuccess());
-            } else {
-              emit(ProfileError(message: 'Failed to upload image'));
+              event.profileModel.image = r;
+              add(UpdateUserOnFireStore(profileModel: event.profileModel));
             }
-          },
-        );
+          });
+        } else {
+          add(UpdateUserOnFireStore(profileModel: event.profileModel));
+        }
       },
     );
+
+    on<UpdateUserOnFireStore>((event, emit) async {
+      final result = await _fireStoreHelpers.updateUser(
+        event.profileModel.toMap(),
+      );
+      result.fold(
+        (l) {
+          OverlayManager.hideOverlay();
+          emit(
+            ProfileError(message: l.message ?? 'Failed to upload image'),
+          );
+        },
+        (r) {
+          if (r) {
+            OverlayManager.hideOverlay();
+            emit(ProfileSuccess());
+          } else {
+            OverlayManager.hideOverlay();
+            emit(ProfileError(message: 'Failed to upload image'));
+          }
+        },
+      );
+    });
 
     on<GetUserEvent>(
       (event, emit) async {

@@ -41,6 +41,10 @@ class OverlayManager {
             child: const CircularProgressIndicator(
               color: AppColors.primary,
             ),
+            // const ImageView(
+            //   strIconData: AppIcons.badge,
+            //   shape: ImageShapes.File,
+            //   width: 60),
           ),
         ));
 

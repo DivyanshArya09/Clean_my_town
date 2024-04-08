@@ -1,5 +1,4 @@
 import 'package:app/core/constants/shared_pef_keys.dart';
-import 'package:app/core/utils/shared_pf_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserHelpers {

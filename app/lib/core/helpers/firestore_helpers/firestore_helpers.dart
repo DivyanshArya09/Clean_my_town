@@ -34,19 +34,17 @@ class FireStoreHelpers {
     return docID.toString();
   }
 
-  Future<void> updateUser(List<String> key, List<dynamic> values) async {
-    String? docID = await SharedPreferencesHelper.getString();
-    DocumentReference docRef =
-        FirebaseFirestore.instance.collection('users').doc(docID);
-    final data = <String, dynamic>{
-      for (var i = 0; i < key.length; i++) key[i]: values[i],
-    };
-    docRef.update(data).then((value) {
-      print("String added to requests array--------------------------->");
-    }).catchError((error) {
-      print(
-          "Error adding string to requests array: $error---------------------->");
-    });
+  Future<Either<Failure, bool>> updateUser(Map<String, dynamic> data) async {
+    try {
+      String? docID = await SharedPreferencesHelper.getString();
+      DocumentReference docRef =
+          FirebaseFirestore.instance.collection('users').doc(docID);
+      docRef.update(data);
+
+      return const Right(true);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
   }
 
   Future<void> updatelocation(String town) async {

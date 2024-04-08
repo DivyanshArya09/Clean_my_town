@@ -15,8 +15,13 @@ final class PickImageEvent extends ProfileEvent {
 }
 
 final class SaveProfile extends ProfileEvent {
-  final File image;
-  SaveProfile({required this.image});
+  final ProfileModel profileModel;
+  SaveProfile({required this.profileModel});
 }
 
 final class GetUserEvent extends ProfileEvent {}
+
+class UpdateUserOnFireStore extends ProfileEvent {
+  final ProfileModel profileModel;
+  UpdateUserOnFireStore({required this.profileModel});
+}

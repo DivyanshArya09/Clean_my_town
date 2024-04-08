@@ -1,6 +1,6 @@
 class ProfileModel {
   final String name;
-  final dynamic image;
+  dynamic image;
   final String email;
   final bool isChanged;
 
@@ -32,5 +32,12 @@ class ProfileModel {
       email: email ?? this.email,
       isChanged: isChanged ?? this.isChanged,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'profilePicture': image,
+    };
   }
 }

@@ -5,13 +5,16 @@ import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/core/utils/string_formatter.dart';
 import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
+import 'package:app/features/utils/overlay_manager.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
+import 'package:app/ui/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,14 +31,19 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   File? image;
+  late TextEditingController _nameTC;
   final _refBloc = ProfileBloc();
   UserModel user = UserModel.empty();
   ProfileModel profile = ProfileModel.empty();
   final StreamController<ProfileModel> _streamController =
       StreamController<ProfileModel>.broadcast();
+
+  final StreamController<String> _nameStream =
+      StreamController<String>.broadcast();
   bool canPop = true;
   @override
   void initState() {
+    _nameTC = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refBloc.add(GetUserEvent());
     });
@@ -45,6 +53,8 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void dispose() {
     _refBloc.close();
+    _nameStream.close();
+    _nameTC.dispose();
     _streamController.close();
     super.dispose();
   }
@@ -101,7 +111,8 @@ class _ProfilePageState extends State<ProfilePage> {
             }
 
             if (state is ProfileSuccess) {
-              ToastHelpers.showToast('Profile Updated....');
+              OverlayManager.hideOverlay();
+              _streamController.add(profile.copyWith(isChanged: false));
             }
 
             if (state is GetUserErrorState) {
@@ -127,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
             }
           },
           builder: (context, state) {
-            if (state is ProfileLoading || state is GetUserLoadingState) {
+            if (state is GetUserLoadingState) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -203,11 +214,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    CustomNavigator.popUntilRoute(
-                                        context, AppPages.home);
+                                    Navigator.pop(context);
+                                    _refBloc.add(SaveProfile(
+                                        profileModel: snapshot.data!));
                                   },
                                   child: Text(
-                                    "Yes",
+                                    "Save Changes",
                                     style: AppStyles.activetabStyle,
                                   ),
                                 ),
@@ -217,10 +229,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                         context, AppPages.home);
                                   },
                                   child: Text(
-                                    "Save Changes",
+                                    "Yes",
                                     style: AppStyles.activetabStyle,
                                   ),
-                                )
+                                ),
                               ],
                             );
                           });
@@ -233,7 +245,10 @@ class _ProfilePageState extends State<ProfilePage> {
               actions: snapshot.data!.isChanged
                   ? [
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          _refBloc
+                              .add(SaveProfile(profileModel: snapshot.data!));
+                        },
                         child: Text(
                           'Save Changes',
                           style: AppStyles.activetabStyle,
@@ -262,6 +277,64 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  _changeNameBottomSheet() {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.only(
+                left: DEFAULT_Horizontal_PADDING,
+                right: DEFAULT_Horizontal_PADDING,
+                top: DEFAULT_VERTICAL_PADDING,
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              children: [
+                Text(
+                  'Change Name',
+                  style: AppStyles.headingDark,
+                ),
+                CustomSpacers.height34,
+                CustomTextField(
+                  hint: 'Enter your name',
+                  controller: _nameTC,
+                  onChanged: (value) {
+                    _nameStream.add(value);
+                  },
+                ),
+                CustomSpacers.height34,
+                StreamBuilder<String>(
+                    stream: _nameStream.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: CustomButton(
+                            btnTxt: 'Update',
+                            onTap: () {
+                              Navigator.pop(context);
+                              _streamController.add(
+                                profile.copyWith(
+                                    isChanged: true,
+                                    name: _nameTC.text
+                                        .capitalizeFirstLetterOfEachWord()),
+                              );
+                            },
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                CustomSpacers.height34,
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   _buildProfilePicture(
     ProfileModel user,
   ) {
@@ -279,7 +352,7 @@ class _ProfilePageState extends State<ProfilePage> {
             clipBehavior: Clip.none,
             children: [
               Positioned.fill(
-                child: buildImageWidget(context, user.image),
+                child: _buildImageWidget(context, user.image),
               ),
               Positioned(
                 bottom: -7,
@@ -312,7 +385,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildImageWidget(BuildContext context, dynamic data) {
+  Widget _buildImageWidget(BuildContext context, dynamic data) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(100),
       child: InkWell(
@@ -327,6 +400,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   )
                 : Image.network(
                     data as String,
+                    fit: BoxFit.fill,
                   ),
           ),
         ),
@@ -338,6 +412,7 @@ class _ProfilePageState extends State<ProfilePage> {
             : data is String && data.isNotEmpty
                 ? Image.network(
                     data,
+                    fit: BoxFit.fill,
                   )
                 : Icon(
                     Icons.person,
@@ -476,12 +551,8 @@ class _ProfilePageState extends State<ProfilePage> {
               if (type == SheetType.EditProfile) ...[
                 ListTile(
                   onTap: () {
-                    // Navigator.pop(context);
-                    // _refBloc.add(
-                    //   PickImageEvent(
-                    //     imageSource: ImageSource.camera,
-                    //   ),
-                    // );
+                    Navigator.pop(context);
+                    _changeNameBottomSheet();
                   },
                   leading: Icon(
                     Icons.edit,

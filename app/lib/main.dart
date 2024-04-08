@@ -1,5 +1,6 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/features/shared/splash_screen.dart';
+import 'package:app/features/utils/overlay_manager.dart';
 import 'package:app/firebase_options.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
           scrollBehavior: ScrollConfiguration.of(context).copyWith(
             physics: const BouncingScrollPhysics(),
           ),
+          builder: OverlayManager.transitionBuilder(),
           navigatorKey: kNavigatorKey,
           initialRoute: AppPages.initial,
           onGenerateRoute: CustomNavigator.controller,

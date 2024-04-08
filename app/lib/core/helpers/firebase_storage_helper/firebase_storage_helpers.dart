@@ -27,18 +27,18 @@ class FireBaseStorageHelper {
   }
 
   Future<Either<Failure, String>> uploadProfilePicture(File imagePath) async {
+    String? imageUrl;
     try {
       final path = 'files/${imagePath.path}.jpg';
       final ref = firebase_storage.FirebaseStorage.instance.ref().child(path);
       await ref.putFile(imagePath);
-      final imageUrl = await ref.getDownloadURL();
-      await fireStoreHelpers.updateUser(['profilePicture'], [imageUrl]);
+      imageUrl = await ref.getDownloadURL();
       return Right(imageUrl);
     } catch (e) {
       print('Error uploading image: $e');
       Left(NormalFailure(message: e.toString()));
     }
-    return const Right('');
+    return Right(imageUrl ?? '');
   }
 
   Future<String?> getImageUrl(String objectId) async {
