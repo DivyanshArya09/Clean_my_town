@@ -8,6 +8,9 @@ import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:app/features/profile/presentation/model/profile_model.dart';
+import 'package:app/route/app_pages.dart';
+import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +30,10 @@ class _ProfilePageState extends State<ProfilePage> {
   File? image;
   final _refBloc = ProfileBloc();
   UserModel user = UserModel.empty();
-  StreamController<dynamic> _streamController = StreamController<dynamic>();
+  ProfileModel profile = ProfileModel.empty();
+  final StreamController<ProfileModel> _streamController =
+      StreamController<ProfileModel>.broadcast();
+  bool canPop = true;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -37,111 +43,227 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   @override
+  void dispose() {
+    _refBloc.close();
+    _streamController.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
+    return WillPopScope(
+      onWillPop: () async {
+        final value = await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Alert"),
+              content: Text("Do you want to Exit ?."),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    },
+                    child: Text("No")),
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Text("Yes")),
+              ],
+            );
           },
-          icon: Icon(
-            Icons.arrow_back_ios_new,
-            color: AppColors.black,
-          ),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () {},
-              child: Text(
-                'Save Changes',
-                style: AppStyles.activetabStyle,
-              ))
-        ],
-        title: const Text('Profile'),
-      ),
-      body: BlocConsumer<ProfileBloc, ProfileState>(
-        bloc: _refBloc,
-        listener: (context, state) {
-          if (state is ImagePickerSuccessState) {
-            _streamController.add(state.image);
-            image = state.image;
-          }
-          if (state is ImagePickerError) {
-            ToastHelpers.showToast(state.message);
-          }
+        );
+        if (value != null) {
+          return Future.value(value);
+        } else {
+          return Future.value(false);
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: BlocConsumer<ProfileBloc, ProfileState>(
+          bloc: _refBloc,
+          listener: (context, state) {
+            if (state is ImagePickerSuccessState) {
+              // _streamController.add(state.image);
+              image = state.image;
+              profile = profile.copyWith(image: image, isChanged: true);
 
-          if (state is ProfileError) {
-            ToastHelpers.showToast(state.message);
-          }
+              _streamController.add(profile);
+            }
+            if (state is ImagePickerError) {
+              ToastHelpers.showToast(state.message);
+            }
 
-          if (state is ProfileSuccess) {
-            ToastHelpers.showToast('Profile Updated....');
-          }
+            if (state is ProfileError) {
+              ToastHelpers.showToast(state.message);
+            }
 
-          if (state is GetUserErrorState) {
-            ToastHelpers.showToast(state.message);
-          }
+            if (state is ProfileSuccess) {
+              ToastHelpers.showToast('Profile Updated....');
+            }
 
-          if (state is GetUserSuccessState) {
-            user = state.user;
-            _streamController.add(state.user.profilePicture);
-          }
+            if (state is GetUserErrorState) {
+              ToastHelpers.showToast(state.message);
+            }
 
-          if (state is ImagePickerLoading) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Loading...'),
+            if (state is GetUserSuccessState) {
+              user = state.user;
+              profile = ProfileModel(
+                name: user.name,
+                email: user.email,
+                image: user.profilePicture,
+              );
+              _streamController.add(profile);
+            }
+
+            if (state is ImagePickerLoading) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Loading...'),
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is ProfileLoading || state is GetUserLoadingState) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            if (state is GetUserErrorState ||
+                state is ImagePickerError ||
+                state is ProfileError) {
+              return const Center(
+                child: Text('Something went wrong'),
+              );
+            }
+            // if (state is GetUserSuccessState) {
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: DEFAULT_Horizontal_PADDING,
+                  vertical: DEFAULT_VERTICAL_PADDING),
+              child: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomSpacers.height16,
+                    StreamBuilder<ProfileModel>(
+                      stream: _streamController.stream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return _buildProfilePicture(snapshot.data!);
+                        } else {
+                          return _buildProfilePicture(profile);
+                        }
+                      },
+                    ),
+                    CustomSpacers.height16,
+                    _buildProfileList(state),
+                  ],
+                ),
               ),
             );
-          }
-        },
-        builder: (context, state) {
-          if (state is ProfileLoading || state is GetUserLoadingState) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+          },
+        ),
+      ),
+    );
+  }
 
-          if (state is GetUserErrorState ||
-              state is ImagePickerError ||
-              state is ProfileError) {
-            return const Center(
-              child: Text('Something went wrong'),
+  _buildAppBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(50.h),
+      child: StreamBuilder<ProfileModel>(
+        stream: _streamController.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return AppBar(
+              centerTitle: true,
+              leading: IconButton(
+                onPressed: () {
+                  !snapshot.data!.isChanged
+                      ? Navigator.pop(context)
+                      : showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              content: Text("Are you sure?"),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              title: Text(
+                                "Do you want to Exit? Changes will be lost",
+                                style: AppStyles.headingDark,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    CustomNavigator.popUntilRoute(
+                                        context, AppPages.home);
+                                  },
+                                  child: Text(
+                                    "Yes",
+                                    style: AppStyles.activetabStyle,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    CustomNavigator.popUntilRoute(
+                                        context, AppPages.home);
+                                  },
+                                  child: Text(
+                                    "Save Changes",
+                                    style: AppStyles.activetabStyle,
+                                  ),
+                                )
+                              ],
+                            );
+                          });
+                },
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: AppColors.black,
+                ),
+              ),
+              actions: snapshot.data!.isChanged
+                  ? [
+                      TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          'Save Changes',
+                          style: AppStyles.activetabStyle,
+                        ),
+                      )
+                    ]
+                  : [],
+              title: const Text('Profile'),
             );
           }
-          // if (state is GetUserSuccessState) {
-          return SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(
-                horizontal: DEFAULT_Horizontal_PADDING,
-                vertical: DEFAULT_VERTICAL_PADDING),
-            child: SizedBox(
-              width: double.maxFinite,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CustomSpacers.height16,
-                  _buildProfilePicture(user.name, user.email),
-                  CustomSpacers.height16,
-                  _buildProfileList(state),
-                ],
+          return AppBar(
+            centerTitle: true,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back_ios_new,
+                color: AppColors.black,
               ),
             ),
+            title: const Text('Profile'),
           );
-          // }
-          // return const Center(
-          //   child: Text('Something went wrong'),
-          // );
         },
       ),
     );
   }
 
   _buildProfilePicture(
-    String? name,
-    String? email,
+    ProfileModel user,
   ) {
     return Column(
       children: [
@@ -157,45 +279,7 @@ class _ProfilePageState extends State<ProfilePage> {
             clipBehavior: Clip.none,
             children: [
               Positioned.fill(
-                child: StreamBuilder(
-                  stream: _streamController.stream,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: InkWell(
-                          onTap: () => showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              contentPadding: EdgeInsets.zero,
-                              content: snapshot.data is File
-                                  ? Image.file(
-                                      snapshot.data!,
-                                      fit: BoxFit.fill,
-                                    )
-                                  : Image.network(
-                                      snapshot.data as String,
-                                    ),
-                            ),
-                          ),
-                          child: snapshot.data is File
-                              ? Image.file(
-                                  snapshot.data!,
-                                  fit: BoxFit.fill,
-                                )
-                              : (snapshot.data as String).isNotEmpty
-                                  ? Image.network(
-                                      snapshot.data as String,
-                                    )
-                                  : Icon(Icons.person,
-                                      size: 60.h, color: AppColors.white),
-                        ),
-                      );
-                    }
-                    return Icon(Icons.person,
-                        size: 60.h, color: AppColors.white);
-                  },
-                ),
+                child: buildImageWidget(context, user.image),
               ),
               Positioned(
                 bottom: -7,
@@ -222,9 +306,45 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
         CustomSpacers.height12,
-        Text(name ?? 'No Name', style: AppStyles.roboto_16_500_dark),
-        Text(email!, style: AppStyles.roboto_16_400_dark),
+        Text(user.name, style: AppStyles.roboto_16_500_dark),
+        Text(user.email, style: AppStyles.roboto_16_400_dark),
       ],
+    );
+  }
+
+  Widget buildImageWidget(BuildContext context, dynamic data) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(100),
+      child: InkWell(
+        onTap: () => showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            contentPadding: EdgeInsets.zero,
+            content: data is File
+                ? Image.file(
+                    data,
+                    fit: BoxFit.fill,
+                  )
+                : Image.network(
+                    data as String,
+                  ),
+          ),
+        ),
+        child: data is File
+            ? Image.file(
+                data,
+                fit: BoxFit.fill,
+              )
+            : data is String && data.isNotEmpty
+                ? Image.network(
+                    data,
+                  )
+                : Icon(
+                    Icons.person,
+                    size: 90,
+                    color: AppColors.white,
+                  ),
+      ),
     );
   }
 
@@ -234,14 +354,8 @@ class _ProfilePageState extends State<ProfilePage> {
         CustomButton(
           btnWidth: 200.w,
           btnRadius: 50,
-          btnTxt: image != null && state is! ProfileSuccess
-              ? 'Save Profile'
-              : 'Edit Profile',
-          onTap: () {
-            image != null && state is! ProfileSuccess
-                ? _refBloc.add(SaveProfile(image: image!))
-                : _showBottomSheet(SheetType.EditProfile);
-          },
+          btnTxt: 'Edit Profile',
+          onTap: () => _showBottomSheet(SheetType.EditProfile),
         ),
         CustomSpacers.height40,
         _buildProfileTile(
@@ -334,7 +448,12 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+              _streamController
+                  .add(profile.copyWith(image: '', isChanged: true));
+            },
             child: Text(
               'Remove',
               style: AppStyles.activetabStyle,

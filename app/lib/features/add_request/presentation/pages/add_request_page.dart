@@ -47,9 +47,21 @@ class _AddRequestPageState extends State<AddRequestPage> {
   }
 
   @override
+  void dispose() {
+    _titleTC.dispose();
+    _locationTC.dispose();
+    _descriptionTC.dispose();
+    _requestRefBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text("Add Request", style: AppStyles.appBarStyle),
+        centerTitle: true,
+      ),
       body: MultiBlocProvider(
         providers: [
           // BlocProvider(create: (_) => _geolocatorRefBloc),
