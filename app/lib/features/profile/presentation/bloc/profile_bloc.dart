@@ -1,23 +1,22 @@
 import 'dart:io';
 
-import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
 import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/core/helpers/image_picker_helper/image_picker_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
-import 'package:app/features/utils/overlay_manager.dart';
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:meta/meta.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+  BuildContext context;
   FireStoreHelpers _fireStoreHelpers = FireStoreHelpers();
   FireBaseStorageHelper _fireBaseStorageHelper = FireBaseStorageHelper();
-  ProfileBloc() : super(ProfileInitial()) {
+  ProfileBloc({required this.context}) : super(ProfileInitial()) {
     on<PickImageEvent>(
       (event, emit) async {
         emit(ImagePickerLoading());
@@ -53,8 +52,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     on<SaveProfile>(
       (event, emit) async {
-        OverlayManager.showLoader(opacity: 0.5, color: AppColors.white);
-
+        emit(ProfileLoading());
         if (event.profileModel.image != null &&
             event.profileModel.image is File) {
           final result = await _fireBaseStorageHelper.uploadProfilePicture(
@@ -62,7 +60,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           );
 
           result.fold((l) {
-            OverlayManager.hideOverlay();
             emit(
               ProfileError(message: l.message ?? 'Failed to upload image'),
             );
@@ -84,17 +81,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       );
       result.fold(
         (l) {
-          OverlayManager.hideOverlay();
           emit(
             ProfileError(message: l.message ?? 'Failed to upload image'),
           );
         },
         (r) {
           if (r) {
-            OverlayManager.hideOverlay();
+            print('success===========================>');
             emit(ProfileSuccess());
           } else {
-            OverlayManager.hideOverlay();
             emit(ProfileError(message: 'Failed to upload image'));
           }
         },
@@ -103,6 +98,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
     on<GetUserEvent>(
       (event, emit) async {
+        print('event================> called');
         emit(GetUserLoadingState());
         try {
           final result = await _fireStoreHelpers.getUser();

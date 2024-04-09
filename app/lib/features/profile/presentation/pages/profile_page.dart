@@ -10,7 +10,6 @@ import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
-import 'package:app/features/utils/overlay_manager.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
@@ -32,7 +31,8 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? image;
   late TextEditingController _nameTC;
-  final _refBloc = ProfileBloc();
+
+  late ProfileBloc _refBloc;
   UserModel user = UserModel.empty();
   ProfileModel profile = ProfileModel.empty();
   final StreamController<ProfileModel> _streamController =
@@ -44,6 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     _nameTC = TextEditingController();
+    _refBloc = ProfileBloc(context: context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refBloc.add(GetUserEvent());
     });
@@ -107,25 +108,44 @@ class _ProfilePageState extends State<ProfilePage> {
             }
 
             if (state is ProfileError) {
+              Navigator.pop(context);
               ToastHelpers.showToast(state.message);
             }
 
             if (state is ProfileSuccess) {
-              OverlayManager.hideOverlay();
+              Navigator.pop(context);
               _streamController.add(profile.copyWith(isChanged: false));
+              _refBloc.add(GetUserEvent());
             }
 
             if (state is GetUserErrorState) {
               ToastHelpers.showToast(state.message);
             }
 
+            if (state is ProfileLoading) {
+              showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (_) => Material(
+                  type: MaterialType.transparency,
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.blue,
+                    ), // Replace with your desired overlay content
+                  ),
+                ),
+              );
+            }
+
             if (state is GetUserSuccessState) {
               user = state.user;
-              profile = ProfileModel(
+              profile = profile.copyWith(
                 name: user.name,
                 email: user.email,
                 image: user.profilePicture,
+                isChanged: false,
               );
+
               _streamController.add(profile);
             }
 
