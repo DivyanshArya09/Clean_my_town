@@ -20,7 +20,7 @@ Clean My Town is a mobile application aimed at addressing real-life problems by 
 
 To run the application locally, follow these steps:
 
-1. Clone this repository: `git clone https://github.com/yourusername/clean-my-town.git`
+1. Clone this repository: `git@github.com:[username]/Clean_my_town.git`
 2. Navigate to the project directory: `cd clean-my-town then cd app`
 3. Install dependencies: `flutter pub get`
 4. Connect your device or start an emulator.
