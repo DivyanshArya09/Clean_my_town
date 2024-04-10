@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/helper.dart';
+import 'package:app/core/helpers/user_helper.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
@@ -89,7 +89,7 @@ class AuthHelper {
         print("========================> ${user.uid}");
         // return Right(email);
       }
-      await SharedPreferencesHelper.saveString(email);
+      await SharedPreferencesHelper.saveUser(email);
       return Right(email);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
