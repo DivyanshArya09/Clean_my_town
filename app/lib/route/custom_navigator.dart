@@ -5,9 +5,9 @@ import 'package:app/features/add_request/presentation/pages/request_detail_page.
 import 'package:app/features/auth/presentation/pages/login_page.dart';
 import 'package:app/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:app/features/auth/presentation/pages/verfy_email_page.dart';
-import 'package:app/features/home/presentation/auth_gate.dart';
 import 'package:app/features/home/presentation/pages/home_page.dart';
 import 'package:app/features/profile/presentation/pages/profile_page.dart';
+import 'package:app/features/shared/splash_screen.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +25,9 @@ class CustomNavigator {
         );
       case AppPages.initial:
         return MaterialPageRoute(
-          builder: (context) => const AuthGate(),
+          builder: (context) => SplashScreen(
+            isUserLoggingIn: settings.arguments as bool,
+          ),
           settings: settings,
         );
       case AppPages.login:

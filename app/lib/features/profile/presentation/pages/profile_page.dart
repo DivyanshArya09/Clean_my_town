@@ -10,6 +10,7 @@ import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
+import 'package:app/features/profile/presentation/widgets/logout_dialog.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
@@ -458,25 +459,29 @@ class _ProfilePageState extends State<ProfilePage> {
               Icons.settings,
               color: AppColors.primary,
             ),
-            'Settings'),
+            'Settings',
+            () {}),
         _buildProfileTile(
             Icon(
               Icons.notifications,
               color: AppColors.primary,
             ),
-            'Notifications'),
+            'Notifications',
+            () {}),
         _buildProfileTile(
             Icon(
               Icons.language,
               color: AppColors.primary,
             ),
-            'Language'),
+            'Language',
+            () {}),
         _buildProfileTile(
             Icon(
               Icons.help,
               color: AppColors.primary,
             ),
-            'Help'),
+            'Help',
+            () {}),
         CustomSpacers.height32,
         _buildProfileTile(
             Icon(
@@ -484,14 +489,16 @@ class _ProfilePageState extends State<ProfilePage> {
               color: AppColors.primary,
             ),
             'Logout',
+            () => showDialog(context: context, builder: (_) => LogOutDialog()),
             disableTrailing: true),
       ],
     );
   }
 
-  _buildProfileTile(Icon leading, String title,
+  _buildProfileTile(Icon leading, String title, VoidCallback onTap,
       {bool disableTrailing = false}) {
     return ListTile(
+      onTap: onTap,
       leading: Container(
         height: 40,
         width: 40,

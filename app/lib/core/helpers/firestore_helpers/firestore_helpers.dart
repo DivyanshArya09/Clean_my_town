@@ -1,5 +1,5 @@
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/helper.dart';
+import 'package:app/core/helpers/user_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
@@ -9,7 +9,7 @@ class FireStoreHelpers {
 
   Future<Either<Failure, void>> saveUser(UserModel user) async {
     try {
-      String? token = await SharedPreferencesHelper.getString();
+      String? token = await SharedPreferencesHelper.getUser();
       if (token != null) {
         await firestore.collection('users').doc(token).set(user.toMap());
       }
@@ -20,7 +20,7 @@ class FireStoreHelpers {
   }
 
   Future<String> updateMyRequestInFirestore(String request) async {
-    String? docID = await SharedPreferencesHelper.getString();
+    String? docID = await SharedPreferencesHelper.getUser();
     DocumentReference docRef =
         FirebaseFirestore.instance.collection('users').doc(docID);
     docRef.update({
@@ -36,7 +36,7 @@ class FireStoreHelpers {
 
   Future<Either<Failure, bool>> updateUser(Map<String, dynamic> data) async {
     try {
-      String? docID = await SharedPreferencesHelper.getString();
+      String? docID = await SharedPreferencesHelper.getUser();
       DocumentReference docRef =
           FirebaseFirestore.instance.collection('users').doc(docID);
       docRef.update(data);
@@ -48,7 +48,7 @@ class FireStoreHelpers {
   }
 
   Future<void> updatelocation(String town) async {
-    String? token = await SharedPreferencesHelper.getString();
+    String? token = await SharedPreferencesHelper.getUser();
     if (token != null) {
       DocumentReference documentSnapshot =
           await FirebaseFirestore.instance.collection('users').doc(token);
@@ -70,7 +70,7 @@ class FireStoreHelpers {
 
   Future<UserModel> getUser() async {
     try {
-      String? token = await SharedPreferencesHelper.getString();
+      String? token = await SharedPreferencesHelper.getUser();
       if (token != null) {
         DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
             .collection('users')

@@ -1,10 +1,11 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
-import 'package:app/core/helpers/helper.dart';
+import 'package:app/core/helpers/user_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/add_request/presentation/bloc/geolocator_bloc.dart';
 import 'package:app/features/home/presentation/auth_gate.dart';
+import 'package:app/features/shared/getting_location_page.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final bool? isUserLoggingIn;
+  const SplashScreen({super.key, this.isUserLoggingIn});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -21,11 +23,10 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final _geofenceBloc = GeolocatorBloc();
   String? user;
-
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      SharedPreferencesHelper.getString().then((value) {
+      SharedPreferencesHelper.getUser().then((value) {
         if (value != null) {
           user = value;
           setState(() {});
@@ -44,8 +45,11 @@ class _SplashScreenState extends State<SplashScreen> {
         listener: (context, state) {
           if (state is GeolocatorSuccess) {
             if (user != null) {
-              CustomNavigator.pushTo(context, AppPages.home,
-                  arguments: state.locationModel);
+              CustomNavigator.pushTo(
+                context,
+                AppPages.home,
+                arguments: state.locationModel,
+              );
             } else {
               CustomNavigator.pushTo(context, AppPages.signup);
             }
@@ -63,27 +67,29 @@ class _SplashScreenState extends State<SplashScreen> {
           // if (state is GeolocatorLoading) {
           //   return GettingLocationPage();
           // }
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(color: AppColors.lightGray),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('We\'ve been waiting for you.',
-                    style: AppStyles.headingDark),
-                CustomSpacers.height40,
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: SvgPicture.asset(
-                    AppImages.splashScreenImage,
-                    fit: BoxFit.fitHeight,
+          return widget.isUserLoggingIn ?? false
+              ? GettingLocationPage()
+              : Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(color: AppColors.lightGray),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('We\'ve been waiting for you.',
+                          style: AppStyles.headingDark),
+                      CustomSpacers.height40,
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child: SvgPicture.asset(
+                          AppImages.splashScreenImage,
+                          fit: BoxFit.fitHeight,
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
-            ),
-          );
+                );
         },
       ),
     );
