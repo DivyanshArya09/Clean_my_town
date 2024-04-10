@@ -15,41 +15,62 @@ class RealtimeDBHelper {
   DatabaseReference db = FirebaseDatabase.instance.ref().child('requests');
 
   Future<Either<Failure, List<RequestModel>>> getOthersRquest() async {
-    // String? town = await SharedPreferencesHelper.getLocation();
-    List<RequestModel> results = [];
-    // print(town);
     try {
-      DataSnapshot snapshot = await db.once().then((value) => value.snapshot);
-      if (snapshot.value != null) {
-        Map<dynamic, dynamic> values = snapshot.value as Map<dynamic, dynamic>;
-        values.forEach((key, value) {
-          if (value['town'].toString().toLowerCase() == 'delhi'.toLowerCase()) {
-            RequestModel model = RequestModel(
-                image: value['image'],
-                town: value['town'],
-                profilePic: value['profilePic'],
-                description: value['description'],
-                location: value['location'],
-                title: value['title'],
-                user: value['user'],
-                status: value['status'],
-                dateTime: value['status']);
-
-            results.add(model);
-          }
-
-          print('i am in block');
-          print(results);
-        });
-      } else {
-        print('Snapshot is empty');
-      }
-    } catch (error) {
-      return Left(ServerFailure(message: error.toString()));
+      final response =
+          await db.orderByChild('town').equalTo('Patiala District').once();
+      Map values = response.snapshot.value as Map;
+      List<RequestModel> results = [];
+      values.forEach(
+        (key, value) {
+          results.add(RequestModel.fromJson(value as Map));
+        },
+      );
+      return right(results);
+    } catch (e) {
+      return left(NormalFailure(message: e.toString()));
     }
-    print(results);
-    return Right(results);
   }
+
+  // Future<Either<Failure, List<RequestModel>>> getOthersRquest() async {
+  //   // String? town = await SharedPreferencesHelper.getLocation();
+
+  //   await db.orderByChild('town').equalTo('Patiala District').once().then(
+  //       (value) =>
+  //           print('==============================>${value.snapshot.value}'));
+  //   List<RequestModel> results = [];
+  //   // print(town);
+  //   // try {
+  //   //   DataSnapshot snapshot = await db.once().then((value) => value.snapshot);
+  //   //   if (snapshot.value != null) {
+  //   //     Map values = snapshot.value as Map;
+  //   //     values.forEach((key, value) {
+  //   //       if (value['town'].toString().toLowerCase() == 'delhi'.toLowerCase()) {
+  //   //         RequestModel model = RequestModel(
+  //   //             image: value['image'],
+  //   //             town: value['town'],
+  //   //             profilePic: value['profilePic'],
+  //   //             description: value['description'],
+  //   //             location: value['location'],
+  //   //             title: value['title'],
+  //   //             user: value['user'],
+  //   //             status: value['status'],
+  //   //             dateTime: value['status']);
+
+  //   //         results.add(model);
+  //   //       }
+
+  //   //       print('i am in block');
+  //   //       print(results);
+  //   //     });
+  //   //   } else {
+  //   //     print('Snapshot is empty');
+  //   //   }
+  //   // } catch (error) {
+  //   //   return Left(ServerFailure(message: error.toString()));
+  //   // }
+  //   // print(results);
+  //   // return Right(results);
+  // }
 
   Future<Either<Failure, void>> addRequest(
       RequestModel data, File image) async {

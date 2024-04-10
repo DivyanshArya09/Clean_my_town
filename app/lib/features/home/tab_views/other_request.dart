@@ -5,7 +5,11 @@ import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/add_request/model/request_model.dart';
+import 'package:app/features/add_request/presentation/pages/request_detail_page.dart';
 import 'package:app/features/home/presentation/bloc/open_req_bloc.dart';
+import 'package:app/features/home/widgets/request_tile.dart';
+import 'package:app/route/app_pages.dart';
+import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -99,7 +103,9 @@ class _OthersRequestState extends State<OthersRequest> {
 
   _buildRequestBody(List<RequestModel> requests) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
       height: double.maxFinite,
       width: double.maxFinite,
       color: AppColors.lightGray,
@@ -124,42 +130,25 @@ class _OthersRequestState extends State<OthersRequest> {
       child: ListView.separated(
         itemCount: requests.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) {
-              //       return RequestDetailPage(request: requests[index]);
-              //     },
-              //   ),
-              // );
-            },
-            tileColor: AppColors.white,
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                  width: 60, child: Image.network(requests[index].image)),
-            ),
-            trailing: TextButton(
-              onPressed: () {},
-              child:
-                  Text(requests[index].town, style: AppStyles.activetabStyle),
-            ),
-            title: Text(requests[index].title, style: AppStyles.titleStyle),
-            subtitle: Text(
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              requests[index].description,
-              style: AppStyles.roboto_14_500_dark,
+          return Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 24 : 0),
+            child: RequestTile(
+              request: requests[index],
+              onTap: () {
+                CustomNavigator.pushTo(
+                  context,
+                  AppPages.requestDetailPage,
+                  arguments: {
+                    'request': requests[index],
+                    'requestType': RequestType.otherRequest,
+                  },
+                );
+              },
             ),
           );
         },
         separatorBuilder: (BuildContext context, int index) {
-          return const Divider(
-            thickness: 1,
-            color: AppColors.darkGray,
-          );
+          return CustomSpacers.height12;
         },
       ),
     );

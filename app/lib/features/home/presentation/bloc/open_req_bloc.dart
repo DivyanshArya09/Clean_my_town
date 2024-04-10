@@ -9,12 +9,16 @@ part 'open_req_state.dart';
 class OpenReqBloc extends Bloc<OpenReqEvent, OpenReqState> {
   RealtimeDBHelper realtimeDBHelper = RealtimeDBHelper();
   OpenReqBloc() : super(OpenReqInitial()) {
-    on<GetOpenReqEvent>((event, emit) async {
-      emit(OpenReqLoading());
-      final result = await realtimeDBHelper.getOthersRquest();
-
-      result.fold((l) => emit(OpenReqError(l.message ?? '')),
-          (r) => emit(OpenReqLoaded(r)));
-    });
+    on<GetOpenReqEvent>(
+      (event, emit) async {
+        emit(OpenReqLoading());
+        final result = await realtimeDBHelper.getOthersRquest();
+        result.fold(
+            (l) => emit(OpenReqError(l.message ?? '')),
+            (r) => r.isEmpty
+                ? emit(OpenReqError('No Active Requests in Your Area..'))
+                : emit(OpenReqLoaded(r)));
+      },
+    );
   }
 }
