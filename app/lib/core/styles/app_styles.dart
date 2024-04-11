@@ -1,5 +1,6 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppStyles {
   static TextStyle activetabStyle = const TextStyle(
@@ -32,9 +33,19 @@ class AppStyles {
     fontSize: 16,
     fontWeight: FontWeight.w400,
   );
+  static TextStyle roboto_16_600_dark = TextStyle(
+    color: AppColors.black,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
   static TextStyle headingLight = TextStyle(
     color: AppColors.white,
     fontSize: 21,
+    fontWeight: FontWeight.w600,
+  );
+  static TextStyle heading2Light = TextStyle(
+    color: AppColors.primary,
+    fontSize: 30.sp,
     fontWeight: FontWeight.w600,
   );
   static TextStyle headingDark = const TextStyle(
