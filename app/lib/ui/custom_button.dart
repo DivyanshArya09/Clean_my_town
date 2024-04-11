@@ -4,7 +4,6 @@ import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/ui/bounce-widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum ButtonType { primary, secondary }
 
@@ -38,7 +37,6 @@ class CustomButton extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         width: btnWidth,
-        padding: EdgeInsets.only(right: 14.w),
         decoration: BoxDecoration(
           borderRadius:
               BorderRadius.circular(btnRadius ?? DEFAULT_BORDER_RADIUS),

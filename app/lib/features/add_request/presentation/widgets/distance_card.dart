@@ -35,48 +35,52 @@ class DistanceCard extends StatelessWidget {
               Text('2.00 km', style: AppStyles.activetabStyle),
             ],
           ),
-          Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: DEFAULT_Horizontal_PADDING,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.white,
-              borderRadius: BorderRadius.circular(DEFAULT_BORDER_RADIUS),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.err,
-                    shape: BoxShape.circle,
+          Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(DEFAULT_BORDER_RADIUS),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: DEFAULT_Horizontal_PADDING,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: BorderRadius.circular(DEFAULT_BORDER_RADIUS),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.err,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.asset(
+                      height: 30.h,
+                      AppImages.walkIcon,
+                    ),
                   ),
-                  child: Image.asset(
-                    height: 30.h,
-                    AppImages.walkIcon,
-                  ),
-                ),
-                Image.asset(
-                  AppImages.rightArrow,
-                  height: 30.h,
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Image.asset(
-                    AppImages.locationIcon,
+                  Image.asset(
+                    AppImages.rightArrow,
                     height: 30.h,
                   ),
-                ),
-              ],
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.asset(
+                      AppImages.locationIcon,
+                      height: 30.h,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           CustomSpacers.height20,

@@ -13,8 +13,8 @@ class ContactDetailsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.lightGray,
         borderRadius: BorderRadius.circular(DEFAULT_BORDER_RADIUS),
+        border: Border.all(color: const Color.fromARGB(255, 210, 212, 209)),
       ),
       padding: EdgeInsets.symmetric(
         vertical: 10,
@@ -74,7 +74,7 @@ class ContactDetailsCard extends StatelessWidget {
               horizontal: DEFAULT_Horizontal_PADDING,
             ),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: AppColors.lightGray,
               borderRadius: BorderRadius.circular(5),
             ),
             child: Row(
@@ -93,9 +93,10 @@ class ContactDetailsCard extends StatelessWidget {
           ),
           CustomSpacers.height20,
           CustomButton(
+            btnType: ButtonType.secondary,
             prefixIcon: Icon(
               Icons.call,
-              color: AppColors.white,
+              color: AppColors.primary,
             ),
             btnTxt: 'Call Now',
             onTap: () {},

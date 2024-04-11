@@ -33,6 +33,10 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
         _sheetStreamController.add(_sheetController.size);
       },
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _sheetStreamController.add(.2);
+    });
     super.initState();
   }
 
@@ -129,63 +133,67 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                 child: StreamBuilder<double>(
                     stream: _sheetStreamController.stream,
                     builder: (context, snapshot) {
-                      return Stack(
-                        children: [
-                          SingleChildScrollView(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: DEFAULT_Horizontal_PADDING,
-                              vertical: DEFAULT_VERTICAL_PADDING,
-                            ),
-                            controller: scrollController,
-                            child: Column(
-                              children: [
-                                if (snapshot.data == null ||
-                                    snapshot.data! < .9) ...[
-                                  Container(
-                                    alignment: Alignment.center,
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.lightGray,
-                                      shape: BoxShape.circle,
+                      if (snapshot.hasData) {
+                        return Stack(
+                          children: [
+                            SingleChildScrollView(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: DEFAULT_Horizontal_PADDING,
+                                vertical: DEFAULT_VERTICAL_PADDING,
+                              ),
+                              controller: scrollController,
+                              child: Column(
+                                children: [
+                                  if (snapshot.data == null ||
+                                      snapshot.data! < .9) ...[
+                                    Container(
+                                      alignment: Alignment.center,
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.lightGray,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.keyboard_arrow_up,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      Icons.keyboard_arrow_up,
-                                      color: AppColors.primary,
+                                    CustomSpacers.height12,
+                                    AnimateText(
+                                        text: "Swipe up to see details"),
+                                  ] else ...[
+                                    CustomSpacers.height21,
+                                    Text(
+                                      "Details",
+                                      style: AppStyles.roboto_16_400_dark,
                                     ),
-                                  ),
-                                  CustomSpacers.height12,
-                                  AnimateText(text: "Swipe up to see details"),
-                                ] else ...[
-                                  CustomSpacers.height21,
-                                  Text(
-                                    "Details",
-                                    style: AppStyles.roboto_16_400_dark,
-                                  ),
-                                  CustomSpacers.height12,
-                                  _buildBody(),
+                                    CustomSpacers.height12,
+                                    _buildBody(),
+                                  ],
                                 ],
-                              ],
-                            ),
-                          ),
-                          Visibility(
-                            visible: snapshot.data! > .9,
-                            child: Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Container(
-                                color: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: DEFAULT_VERTICAL_PADDING,
-                                    horizontal: 16),
-                                child: CustomButton(
-                                  // btnType: ButtonType.secondary,
-                                  btnTxt: 'Accept',
-                                  onTap: () {},
-                                ),
                               ),
                             ),
-                          )
-                        ],
-                      );
+                            Visibility(
+                              visible: snapshot.data! > .9,
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  color: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: DEFAULT_VERTICAL_PADDING,
+                                      horizontal: 16),
+                                  child: CustomButton(
+                                    // btnType: ButtonType.secondary,
+                                    btnTxt: 'Accept',
+                                    onTap: () {},
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        );
+                      }
+                      return Container();
                     }),
               );
             },
@@ -220,6 +228,20 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
         ),
         CustomSpacers.height12,
         DistanceCard(),
+        CustomSpacers.height12,
+        Text(
+          'Details',
+          style: AppStyles.roboto_16_400_dark,
+        ),
+        CustomSpacers.height12,
+        SizedBox(
+          width: MediaQuery.of(context).size.width * .9,
+          child: Text(
+            softWrap: true,
+            'Text(String data, {Key? key, TextStyle? style, StrutStyle? strutStyle, TextAlign? textAlign, TextDirection? textDirection, Locale? locale, bool? softWrap, TextOverflow? overflow, double? textScaleFactor, TextScaler? textScaler, int? maxLines, String? semanticsLabel, TextWidthBasis? textWidthBasis, TextHeightBehavior?',
+            style: AppStyles.roboto_14_400_dark,
+          ),
+        ),
         CustomSpacers.height12,
         Text(
           'Contact Details',

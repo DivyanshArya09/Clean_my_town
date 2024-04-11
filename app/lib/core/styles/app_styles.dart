@@ -58,6 +58,11 @@ class AppStyles {
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
+  static TextStyle roboto_14_400_dark = const TextStyle(
+    color: Color.fromARGB(255, 113, 116, 113),
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
   static TextStyle inActivetabStyle = const TextStyle(
     color: AppColors.black,
     fontSize: 14,
