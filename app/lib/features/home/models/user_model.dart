@@ -5,6 +5,7 @@ class UserModel {
   final List<String> requests;
   final String location;
   final String profilePicture;
+  String? number;
 
   UserModel({
     required this.name,
@@ -13,6 +14,7 @@ class UserModel {
     required this.requests,
     required this.location,
     required this.profilePicture,
+    this.number,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -23,6 +25,7 @@ class UserModel {
       requests: List<String>.from(map['requests'] ?? []),
       location: map['location'] ?? '',
       profilePicture: map['profilePicture'] ?? '',
+      number: map['number'] ?? '',
     );
   }
 
@@ -34,6 +37,7 @@ class UserModel {
       requests: [],
       location: '',
       profilePicture: '',
+      number: '',
     );
   }
 
@@ -46,6 +50,7 @@ class UserModel {
       'requests': requests,
       'location': location,
       'profilePicture': profilePicture,
+      'number': number,
     };
   }
 
@@ -57,6 +62,7 @@ class UserModel {
     List<String>? requests,
     String? location,
     String? profilePicture,
+    String? number,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -65,52 +71,7 @@ class UserModel {
       requests: requests ?? this.requests,
       location: location ?? this.location,
       profilePicture: profilePicture ?? this.profilePicture,
+      number: number ?? this.number,
     );
   }
 }
-
-
-/**class UserModel {
-  final String name;
-  final String email;
-  final String password;
-  final List<String> requests;
-  final String location;
-
-  UserModel({
-    required this.name,
-    required this.email,
-    required this.password,
-    required this.requests,
-    required this.location,
-  });
-
-  factory UserModel.empty() {
-    return UserModel(
-      name: '',
-      email: '',
-      password: '',
-      requests: [],
-      location: '',
-    );
-  }
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      name: map['name'] ?? '', // Provide default value if 'name' is missing
-      email: map['email'] ?? '',
-      password: map['password'] ?? '',
-      requests: List<String>.from(map['requests'] ?? []),
-      location: map['location'] ?? '',
-    );
-  }
-
-  // Method to convert User object to a map
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'email': email,
-      'password': password,
-      'requests': requests,
-      'location': location,
- */

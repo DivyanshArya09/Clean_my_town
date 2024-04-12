@@ -4,15 +4,18 @@ import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/widgets/animated_text.dart';
 import 'package:app/features/add_request/presentation/widgets/contact_details_card.dart';
 import 'package:app/features/add_request/presentation/widgets/distance_card.dart';
 import 'package:app/ui/custom_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OthersRequestDetailPage extends StatefulWidget {
-  const OthersRequestDetailPage({super.key});
+  final RequestModel requestModel;
+  const OthersRequestDetailPage({super.key, required this.requestModel});
 
   @override
   State<OthersRequestDetailPage> createState() =>
@@ -27,13 +30,11 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
   void initState() {
     _sheetController = DraggableScrollableController();
     _sheetStreamController = StreamController<double>.broadcast();
-
     _sheetController.addListener(
       () {
         _sheetStreamController.add(_sheetController.size);
       },
     );
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _sheetStreamController.add(.2);
     });
@@ -43,6 +44,7 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
   @override
   void dispose() {
     _sheetStreamController.close();
+    _sheetController.dispose();
     super.dispose();
   }
 
@@ -52,9 +54,12 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.network(
-              'https://theecologist.org/sites/default/files/styles/inline_l/public/NG_media/367515.png?itok=5h_ovkap',
+            child: CachedNetworkImage(
+              imageUrl: widget.requestModel.image,
               fit: BoxFit.fitHeight,
+              errorWidget: (context, url, error) {
+                return const Icon(Icons.error);
+              },
             ),
           ),
           Positioned.fill(
@@ -75,7 +80,7 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Text(
-                      'Need help to clean this area',
+                      widget.requestModel.title,
                       style: AppStyles.heading2Light,
                     ),
                   ),
@@ -89,9 +94,10 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: Text(
                           softWrap: true,
-                          maxLines: 3,
+                          textAlign: TextAlign.start,
+                          maxLines: 6,
                           overflow: TextOverflow.ellipsis,
-                          'Near gopal nagar, sbazi mandi, Gurdaspur',
+                          widget.requestModel.fullAddress,
                           style: AppStyles.roboto_14_500_light,
                         ),
                       ),
@@ -212,13 +218,17 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           width: double.maxFinite,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-              image: NetworkImage(
-                'https://theecologist.org/sites/default/files/styles/inline_l/public/NG_media/367515.png?itok=5h_ovkap',
-              ),
-              fit: BoxFit.fitHeight,
-            ),
             color: AppColors.lightGray,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: CachedNetworkImage(
+              imageUrl: widget.requestModel.image,
+              fit: BoxFit.cover,
+              errorWidget: (context, url, error) {
+                return const Icon(Icons.error);
+              },
+            ),
           ),
         ),
         CustomSpacers.height12,
@@ -237,8 +247,9 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
         SizedBox(
           width: MediaQuery.of(context).size.width * .9,
           child: Text(
+            widget.requestModel.description,
             softWrap: true,
-            'Text(String data, {Key? key, TextStyle? style, StrutStyle? strutStyle, TextAlign? textAlign, TextDirection? textDirection, Locale? locale, bool? softWrap, TextOverflow? overflow, double? textScaleFactor, TextScaler? textScaler, int? maxLines, String? semanticsLabel, TextWidthBasis? textWidthBasis, TextHeightBehavior?',
+            textAlign: TextAlign.start,
             style: AppStyles.roboto_14_400_dark,
           ),
         ),

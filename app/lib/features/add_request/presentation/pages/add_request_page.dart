@@ -8,6 +8,7 @@ import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/date_time_formatter.dart';
 import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/add_request/model/request_model.dart';
+import 'package:app/features/add_request/presentation/add_request_utls.dart';
 import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
 import 'package:app/features/shared/loading_page.dart';
@@ -282,29 +283,7 @@ class _AddRequestPageState extends State<AddRequestPage> {
                       ),
                       child: CustomButton(
                         btnTxt: 'Add Request',
-                        onTap: () {
-                          if (_formKey.currentState!.validate()) {
-                            if (image == null) {
-                              ToastHelpers.showToast("Please add image");
-                            } else {
-                              reqModel = reqModel.copyWith(
-                                title: _titleTC.text,
-                                description: _descriptionTC.text,
-                                location:
-                                    "${widget.location.lat.toString()}-${widget.location.lon.toString()}",
-                                town: widget.location.address.stateDistrict,
-                                status: true,
-                                fullAddress: widget.location.displayName,
-                                dateTime: DateTime.now().toTime(),
-                              );
-
-                              print(
-                                  '=================> Imagepath ${image!.path}');
-                              _requestRefBloc.add(AddRequest(
-                                  requestModel: reqModel, imagePath: image!));
-                            }
-                          }
-                        },
+                        onTap: () => _handleOnAddRequestTap(),
                       ),
                     ),
                   )
@@ -315,5 +294,31 @@ class _AddRequestPageState extends State<AddRequestPage> {
         ),
       ),
     );
+  }
+
+  _handleOnAddRequestTap() {
+    if (_formKey.currentState!.validate()) {
+      String area = AddRequestUtils.getArea(
+        widget.location.address,
+      );
+      if (area == '') {
+        ToastHelpers.showToast("We are unable to determine your area");
+      } else if (image == null) {
+        ToastHelpers.showToast("Please add image");
+      } else {
+        reqModel = reqModel.copyWith(
+          title: _titleTC.text,
+          description: _descriptionTC.text,
+          location:
+              "${widget.location.lat.toString()}-${widget.location.lon.toString()}",
+          area: area,
+          status: true,
+          fullAddress: widget.location.displayName,
+          dateTime: DateTime.now().toTime(),
+        );
+        _requestRefBloc
+            .add(AddRequest(requestModel: reqModel, imagePath: image!));
+      }
+    }
   }
 }

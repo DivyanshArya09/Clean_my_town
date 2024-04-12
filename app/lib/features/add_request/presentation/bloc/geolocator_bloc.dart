@@ -23,7 +23,7 @@ class GeolocatorBloc extends Bloc<GeolocatorEvent, GeolocatorState> {
 
           await result.fold(
             (failure) async {
-              print('======================> failure');
+              print('======================> $failure');
               if (failure is NormalFailure) {
                 final location = await SharedPreferencesHelper.getLocation();
                 location.fold(

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:app/core/errors/failures.dart';
 import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
 import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
+import 'package:app/core/helpers/user_helper.dart';
 import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:dartz/dartz.dart';
@@ -14,10 +15,10 @@ class RealtimeDBHelper {
 
   DatabaseReference db = FirebaseDatabase.instance.ref().child('requests');
 
-  Future<Either<Failure, List<RequestModel>>> getOthersRquest() async {
+  Future<Either<Failure, List<RequestModel>>> getOthersRquest(
+      String area) async {
     try {
-      final response =
-          await db.orderByChild('town').equalTo('Patiala District').once();
+      final response = await db.orderByChild('area').equalTo(area).once();
       Map values = response.snapshot.value as Map;
       List<RequestModel> results = [];
       values.forEach(
@@ -29,6 +30,10 @@ class RealtimeDBHelper {
     } catch (e) {
       return left(NormalFailure(message: e.toString()));
     }
+  }
+
+  Stream<DatabaseEvent> getRealTimeData(String area) {
+    return db.orderByChild('area').equalTo(area).onValue;
   }
 
   // Future<Either<Failure, List<RequestModel>>> getOthersRquest() async {
@@ -89,7 +94,18 @@ class RealtimeDBHelper {
 
   Future<Either<Failure, List<RequestModel>>> getRequests() async {
     try {
-      UserModel user = await fireStoreHelpers.getUser();
+      String? token = await SharedPreferencesHelper.getUser();
+      if (token == null)
+        return const Left(
+          ServerFailure(message: 'No user found with this token'),
+        );
+
+      UserModel? user = await fireStoreHelpers.getUser(token);
+      if (user == null)
+        return const Left(
+          ServerFailure(message: 'No user found with this token'),
+        );
+
       List<Future<DataSnapshot>> futures = await user.requests
           .map((e) => db.child(e).once().then((event) => event.snapshot))
           .toList();

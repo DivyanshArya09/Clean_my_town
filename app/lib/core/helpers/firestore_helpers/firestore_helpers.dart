@@ -68,9 +68,8 @@ class FireStoreHelpers {
     }
   }
 
-  Future<UserModel> getUser() async {
+  Future<UserModel?> getUser(String token) async {
     try {
-      String? token = await SharedPreferencesHelper.getUser();
       if (token != null) {
         DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
             .collection('users')
@@ -89,6 +88,7 @@ class FireStoreHelpers {
     } catch (e) {
       throw Exception(e.toString());
     }
+
     throw Exception('No user found');
   }
 }

@@ -10,9 +10,15 @@ part 'request_event.dart';
 part 'request_state.dart';
 
 class RequestBloc extends Bloc<RequestEvent, RequestState> {
+//  late StreamSubscription _positionSubscription;
+
   RealtimeDBHelper realtimeDBHelper = RealtimeDBHelper();
 
   RequestBloc() : super(RequestInitial()) {
+    //  _positionSubscription = realtimeDBHelper.getRealTimeData().listen((event) {
+    //     add(());
+    //   });
+
     on<AddRequest>(
       (event, emit) async {
         emit(RequestLoading());

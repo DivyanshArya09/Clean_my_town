@@ -1,6 +1,6 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/managers/app_manager.dart';
-import 'package:app/features/add_request/presentation/pages/others_request_detail_page.dart';
+import 'package:app/features/shared/splash_screen.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           home: child,
         );
       },
-      child: const OthersRequestDetailPage(),
+      child: const SplashScreen(),
     );
     //
   }

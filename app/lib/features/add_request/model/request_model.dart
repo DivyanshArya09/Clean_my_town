@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 
 class RequestModel extends Equatable {
   final String image;
-  final String town;
+  final String area;
   final String profilePic;
   final String description;
   final String location;
@@ -16,7 +16,7 @@ class RequestModel extends Equatable {
 
   RequestModel({
     required this.image,
-    required this.town,
+    required this.area,
     required this.profilePic,
     required this.description,
     required this.location,
@@ -30,7 +30,7 @@ class RequestModel extends Equatable {
   factory RequestModel.empty() {
     return RequestModel(
       image: '',
-      town: '',
+      area: '',
       profilePic: '',
       description: '',
       title: '',
@@ -45,7 +45,7 @@ class RequestModel extends Equatable {
   factory RequestModel.fromJson(Map json) {
     return RequestModel(
       image: json['image'] ?? '',
-      town: json['town'] ?? '',
+      area: json['town'] ?? '',
       profilePic: json['profilePic'] ?? '',
       description: json['description'] ?? '',
       location: json['location'] ?? '',
@@ -61,7 +61,7 @@ class RequestModel extends Equatable {
     String? description,
     String? location,
     String? image,
-    String? town,
+    String? area,
     String? user,
     String? profilePic,
     bool? status,
@@ -73,7 +73,7 @@ class RequestModel extends Equatable {
       description: description ?? this.description,
       location: location ?? this.location,
       image: image ?? this.image,
-      town: town ?? this.town,
+      area: area ?? this.area,
       user: user ?? this.user,
       profilePic: profilePic ?? this.profilePic,
       status: status ?? this.status,
@@ -85,7 +85,7 @@ class RequestModel extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'image': image,
-      'town': town,
+      'area': area,
       'profilePic': profilePic,
       'description': description,
       'location': location, // Convert Location object to JSON
@@ -99,5 +99,5 @@ class RequestModel extends Equatable {
 
   @override
   List<Object?> get props =>
-      [image, town, profilePic, description, location, title, user, status];
+      [image, area, profilePic, description, location, title, user, status];
 }

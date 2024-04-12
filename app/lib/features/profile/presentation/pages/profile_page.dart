@@ -11,6 +11,7 @@ import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
 import 'package:app/features/profile/presentation/widgets/logout_dialog.dart';
+import 'package:app/features/profile/widgets/profile_tile.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
@@ -20,7 +21,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
-enum SheetType { PickImage, EditProfile }
+enum UserActionType { PickImage, EditProfile }
+
+enum SheetType { UpdateName, UpdateNumber }
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -32,19 +35,21 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   File? image;
   late TextEditingController _nameTC;
-
+  late TextEditingController _numberTC;
   late ProfileBloc _refBloc;
   UserModel user = UserModel.empty();
   ProfileModel profile = ProfileModel.empty();
   final StreamController<ProfileModel> _streamController =
       StreamController<ProfileModel>.broadcast();
-
   final StreamController<String> _nameStream =
       StreamController<String>.broadcast();
   bool canPop = true;
+  var _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     _nameTC = TextEditingController();
+    _numberTC = TextEditingController();
     _refBloc = ProfileBloc(context: context);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _refBloc.add(GetUserEvent());
@@ -56,6 +61,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void dispose() {
     _refBloc.close();
     _nameStream.close();
+    _numberTC.dispose();
     _nameTC.dispose();
     _streamController.close();
     super.dispose();
@@ -63,146 +69,117 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        final value = await showDialog<bool>(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: Text("Alert"),
-              content: Text("Do you want to Exit ?."),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(false);
-                    },
-                    child: Text("No")),
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(true);
-                    },
-                    child: Text("Yes")),
-              ],
-            );
-          },
-        );
-        if (value != null) {
-          return Future.value(value);
-        } else {
-          return Future.value(false);
-        }
-      },
-      child: Scaffold(
-        appBar: _buildAppBar(),
-        body: BlocConsumer<ProfileBloc, ProfileState>(
-          bloc: _refBloc,
-          listener: (context, state) {
-            if (state is ImagePickerSuccessState) {
-              // _streamController.add(state.image);
-              image = state.image;
-              profile = profile.copyWith(image: image, isChanged: true);
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: BlocConsumer<ProfileBloc, ProfileState>(
+        bloc: _refBloc,
+        listener: (context, state) {
+          if (state is ImagePickerSuccessState) {
+            // _streamController.add(state.image);
+            image = state.image;
+            profile = profile.copyWith(image: image, isChanged: true);
 
-              _streamController.add(profile);
-            }
-            if (state is ImagePickerError) {
-              ToastHelpers.showToast(state.message);
-            }
+            _streamController.add(profile);
+          }
+          if (state is ImagePickerError) {
+            ToastHelpers.showToast(state.message);
+          }
 
-            if (state is ProfileError) {
-              Navigator.pop(context);
-              ToastHelpers.showToast(state.message);
-            }
+          if (state is ProfileError) {
+            Navigator.pop(context);
+            ToastHelpers.showToast(state.message);
+          }
 
-            if (state is ProfileSuccess) {
-              Navigator.pop(context);
-              _streamController.add(profile.copyWith(isChanged: false));
-              _refBloc.add(GetUserEvent());
-            }
+          if (state is ProfileSuccess) {
+            Navigator.pop(context);
+            _streamController.add(profile.copyWith(isChanged: false));
+            _refBloc.add(GetUserEvent());
+          }
 
-            if (state is GetUserErrorState) {
-              ToastHelpers.showToast(state.message);
-            }
+          if (state is GetUserErrorState) {
+            ToastHelpers.showToast(state.message);
+          }
 
-            if (state is ProfileLoading) {
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (_) => Material(
-                  type: MaterialType.transparency,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.blue,
-                    ), // Replace with your desired overlay content
-                  ),
-                ),
-              );
-            }
-
-            if (state is GetUserSuccessState) {
-              user = state.user;
-              profile = profile.copyWith(
-                name: user.name,
-                email: user.email,
-                image: user.profilePicture,
-                isChanged: false,
-              );
-
-              _streamController.add(profile);
-            }
-
-            if (state is ImagePickerLoading) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Loading...'),
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is GetUserLoadingState) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if (state is GetUserErrorState ||
-                state is ImagePickerError ||
-                state is ProfileError) {
-              return const Center(
-                child: Text('Something went wrong'),
-              );
-            }
-            // if (state is GetUserSuccessState) {
-            return SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(
-                  horizontal: DEFAULT_Horizontal_PADDING,
-                  vertical: DEFAULT_VERTICAL_PADDING),
-              child: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomSpacers.height16,
-                    StreamBuilder<ProfileModel>(
-                      stream: _streamController.stream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return _buildProfilePicture(snapshot.data!);
-                        } else {
-                          return _buildProfilePicture(profile);
-                        }
-                      },
-                    ),
-                    CustomSpacers.height16,
-                    _buildProfileList(state),
-                  ],
+          if (state is ProfileLoading) {
+            showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (_) => Material(
+                type: MaterialType.transparency,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.blue,
+                  ), // Replace with your desired overlay content
                 ),
               ),
             );
-          },
-        ),
+          }
+
+          if (state is GetUserSuccessState) {
+            user = state.user;
+            profile = profile.copyWith(
+              name: user.name,
+              email: user.email,
+              image: user.profilePicture,
+              isChanged: false,
+              number: user.number,
+            );
+
+            _streamController.add(profile);
+          }
+
+          if (state is ImagePickerLoading) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Loading...'),
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is GetUserLoadingState) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          if (state is GetUserErrorState ||
+              state is ImagePickerError ||
+              state is ProfileError) {
+            return const Center(
+              child: Text('Something went wrong'),
+            );
+          }
+          // if (state is GetUserSuccessState) {
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.symmetric(
+              horizontal: DEFAULT_Horizontal_PADDING,
+            ),
+            child: SizedBox(
+              width: double.maxFinite,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomSpacers.height16,
+                  StreamBuilder<ProfileModel>(
+                    stream: _streamController.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return _buildProfilePicture(snapshot.data!);
+                      } else {
+                        return _buildProfilePicture(profile);
+                      }
+                    },
+                  ),
+                  CustomSpacers.height16,
+                  _buildProfileList(state),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -298,64 +275,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _changeNameBottomSheet() {
-    return showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (context) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.only(
-                left: DEFAULT_Horizontal_PADDING,
-                right: DEFAULT_Horizontal_PADDING,
-                top: DEFAULT_VERTICAL_PADDING,
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Column(
-              children: [
-                Text(
-                  'Change Name',
-                  style: AppStyles.headingDark,
-                ),
-                CustomSpacers.height34,
-                CustomTextField(
-                  hint: 'Enter your name',
-                  controller: _nameTC,
-                  onChanged: (value) {
-                    _nameStream.add(value);
-                  },
-                ),
-                CustomSpacers.height34,
-                StreamBuilder<String>(
-                    stream: _nameStream.stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData && snapshot.data!.isNotEmpty) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: CustomButton(
-                            btnTxt: 'Update',
-                            onTap: () {
-                              Navigator.pop(context);
-                              _streamController.add(
-                                profile.copyWith(
-                                    isChanged: true,
-                                    name: _nameTC.text
-                                        .capitalizeFirstLetterOfEachWord()),
-                              );
-                            },
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    }),
-                CustomSpacers.height34,
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   _buildProfilePicture(
     ProfileModel user,
   ) {
@@ -379,7 +298,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 bottom: -7,
                 right: 0,
                 child: GestureDetector(
-                  onTap: () => _showBottomSheet(SheetType.PickImage),
+                  onTap: () => _showBottomSheet(UserActionType.PickImage),
                   child: Container(
                     alignment: Alignment.center,
                     decoration: const BoxDecoration(
@@ -402,6 +321,10 @@ class _ProfilePageState extends State<ProfilePage> {
         CustomSpacers.height12,
         Text(user.name, style: AppStyles.roboto_16_500_dark),
         Text(user.email, style: AppStyles.roboto_16_400_dark),
+        Text(
+          user.number!.isEmpty ? "No Contact Details" : user.number!,
+          style: AppStyles.roboto_16_400_dark,
+        ),
       ],
     );
   }
@@ -451,84 +374,57 @@ class _ProfilePageState extends State<ProfilePage> {
           btnWidth: 200.w,
           btnRadius: 50,
           btnTxt: 'Edit Profile',
-          onTap: () => _showBottomSheet(SheetType.EditProfile),
+          onTap: () => _showBottomSheet(UserActionType.EditProfile),
         ),
         CustomSpacers.height40,
-        _buildProfileTile(
-            Icon(
-              Icons.settings,
-              color: AppColors.primary,
-            ),
-            'Settings',
-            () {}),
-        _buildProfileTile(
-            Icon(
-              Icons.notifications,
-              color: AppColors.primary,
-            ),
-            'Notifications',
-            () {}),
-        _buildProfileTile(
-            Icon(
-              Icons.language,
-              color: AppColors.primary,
-            ),
-            'Language',
-            () {}),
-        _buildProfileTile(
-            Icon(
-              Icons.help,
-              color: AppColors.primary,
-            ),
-            'Help',
-            () {}),
+        ProfileTile(
+          leading: Icon(
+            Icons.call,
+            color: AppColors.primary,
+          ),
+          title: 'Settings',
+          onTap: () {},
+        ),
+        ProfileTile(
+          leading: Icon(
+            Icons.notifications,
+            color: AppColors.primary,
+          ),
+          title: 'Notifications',
+          onTap: () {},
+        ),
+        ProfileTile(
+          leading: Icon(
+            Icons.language,
+            color: AppColors.primary,
+          ),
+          title: 'Language',
+          onTap: () {},
+        ),
+        ProfileTile(
+          leading: Icon(
+            Icons.help,
+            color: AppColors.primary,
+          ),
+          title: 'Help',
+          onTap: () {},
+        ),
         CustomSpacers.height32,
-        _buildProfileTile(
-            Icon(
-              Icons.logout,
-              color: AppColors.primary,
-            ),
-            'Logout',
-            () => showDialog(context: context, builder: (_) => LogOutDialog()),
-            disableTrailing: true),
+        ProfileTile(
+          leading: Icon(
+            Icons.logout,
+            color: AppColors.primary,
+          ),
+          title: 'Logout',
+          onTap: () =>
+              showDialog(context: context, builder: (_) => LogOutDialog()),
+          disableTrailing: true,
+        ),
       ],
     );
   }
 
-  _buildProfileTile(Icon leading, String title, VoidCallback onTap,
-      {bool disableTrailing = false}) {
-    return ListTile(
-      onTap: onTap,
-      leading: Container(
-        height: 40,
-        width: 40,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.primary.withOpacity(.3),
-        ),
-        child: leading,
-      ),
-      title: Text(title, style: AppStyles.roboto_14_500_dark),
-      trailing: disableTrailing
-          ? null
-          : Container(
-              height: 30,
-              width: 30,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(.1),
-              ),
-              child: Icon(
-                Icons.arrow_forward_ios,
-                color: AppColors.primary.withOpacity(.8),
-                size: 16,
-              ),
-            ),
-    );
-  }
-
+  // =======================DIALOG'S========================
   _showDialog() {
     return showDialog(
       context: context,
@@ -566,7 +462,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _showBottomSheet(SheetType type) {
+  // ========================BOTTOM SHEET'S========================
+  _showBottomSheet(UserActionType type) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
@@ -575,16 +472,30 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             children: [
               CustomSpacers.height16,
-              if (type == SheetType.EditProfile) ...[
+              if (type == UserActionType.EditProfile) ...[
                 ListTile(
                   onTap: () {
                     Navigator.pop(context);
-                    _changeNameBottomSheet();
+                    _changeNameBottomSheet(SheetType.UpdateName);
                   },
                   leading: Icon(
                     Icons.edit,
                   ),
                   title: Text('Change name'),
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.contact_page,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _changeNameBottomSheet(SheetType.UpdateNumber);
+                  },
+                  title: Text(
+                    user.number == null || user.number!.isEmpty
+                        ? 'Add Contact Number'
+                        : 'Update Contact Number',
+                  ),
                 ),
                 ListTile(
                   onTap: () => _showDialog(),
@@ -593,8 +504,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   title: Text('Remove profile picture'),
                 ),
+                CustomSpacers.height16,
               ],
-              if (type == SheetType.PickImage) ...[
+              if (type == UserActionType.PickImage) ...[
                 ListTile(
                   onTap: () {
                     Navigator.pop(context);
@@ -623,6 +535,92 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ]
             ],
+          ),
+        );
+      },
+    );
+  }
+
+  _changeNameBottomSheet(SheetType type) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.only(
+                left: DEFAULT_Horizontal_PADDING,
+                right: DEFAULT_Horizontal_PADDING,
+                top: DEFAULT_VERTICAL_PADDING,
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Text(
+                    type == SheetType.UpdateName ? 'Change Name' : 'Add Number',
+                    style: AppStyles.headingDark,
+                  ),
+                  CustomSpacers.height34,
+                  type == SheetType.UpdateName
+                      ? CustomTextField(
+                          hint: 'Enter your name',
+                          controller: _nameTC,
+                          onChanged: (value) {
+                            _nameStream.add(value);
+                          },
+                        )
+                      : CustomTextField(
+                          keyboardType: TextInputType.number,
+                          hint: 'Enter your Number',
+                          validator: (p0) {
+                            if (p0!.isEmpty || p0.length < 10) {
+                              return 'Please enter your number';
+                            }
+                            return null;
+                          },
+                          controller: _nameTC,
+                          onChanged: (value) {
+                            _nameStream.add(value);
+                          },
+                        ),
+                  CustomSpacers.height34,
+                  StreamBuilder<String>(
+                      stream: _nameStream.stream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: CustomButton(
+                              btnTxt: 'Update',
+                              onTap: () {
+                                Navigator.pop(context);
+                                if (type == SheetType.UpdateName) {
+                                  _streamController.add(
+                                    profile.copyWith(
+                                        isChanged: true,
+                                        name: _nameTC.text
+                                            .capitalizeFirstLetterOfEachWord()),
+                                  );
+                                } else {
+                                  if (_formKey.currentState!.validate()) {
+                                    _streamController.add(
+                                      profile.copyWith(
+                                          isChanged: true,
+                                          number: _nameTC.text),
+                                    );
+                                  }
+                                }
+                              },
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }),
+                  CustomSpacers.height34,
+                ],
+              ),
+            ),
           ),
         );
       },

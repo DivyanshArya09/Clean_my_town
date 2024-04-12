@@ -1,11 +1,9 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
-import 'package:app/core/helpers/realtime_data_helpers/realtime_data_base_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/add_request/presentation/pages/request_detail_page.dart';
 import 'package:app/features/home/presentation/bloc/open_req_bloc.dart';
 import 'package:app/features/home/widgets/request_tile.dart';
 import 'package:app/route/app_pages.dart';
@@ -15,34 +13,27 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class OthersRequest extends StatefulWidget {
-  const OthersRequest({super.key});
-
+  final OpenReqBloc openReqBloc;
+  const OthersRequest({super.key, required this.openReqBloc});
   @override
   State<OthersRequest> createState() => _OthersRequestState();
 }
 
 class _OthersRequestState extends State<OthersRequest> {
-  RealtimeDBHelper realtimeDBHelper = RealtimeDBHelper();
-  final _refBloc = OpenReqBloc();
   @override
   void dispose() {
-    _refBloc.close();
     super.dispose();
   }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // realtimeDBHelper.getOthersRquest();
-      _refBloc.add(GetOpenReqEvent());
-    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OpenReqBloc, OpenReqState>(
-      bloc: _refBloc,
+      bloc: widget.openReqBloc,
       listener: (context, state) {
         if (state is OpenReqLoaded) {
           ToastHelpers.showToast('success');
@@ -137,11 +128,8 @@ class _OthersRequestState extends State<OthersRequest> {
               onTap: () {
                 CustomNavigator.pushTo(
                   context,
-                  AppPages.requestDetailPage,
-                  arguments: {
-                    'request': requests[index],
-                    'requestType': RequestType.otherRequest,
-                  },
+                  AppPages.othersRequestDetailPage,
+                  arguments: requests[index],
                 );
               },
             ),

@@ -7,4 +7,14 @@ sealed class OpenReqEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetOpenReqEvent extends OpenReqEvent {}
+class OpenReqInitial extends OpenReqEvent {}
+
+class GetOpenReqEvent extends OpenReqEvent {
+  final String area;
+  GetOpenReqEvent({required this.area});
+}
+
+final class GetContactDetailsEvent extends OpenReqEvent {
+  final String uid;
+  GetContactDetailsEvent(this.uid);
+}

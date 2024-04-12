@@ -1,6 +1,7 @@
 import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/add_request/presentation/models/location_model.dart';
 import 'package:app/features/add_request/presentation/pages/add_request_page.dart';
+import 'package:app/features/add_request/presentation/pages/others_request_detail_page.dart';
 import 'package:app/features/add_request/presentation/pages/request_detail_page.dart';
 import 'package:app/features/auth/presentation/pages/login_page.dart';
 import 'package:app/features/auth/presentation/pages/sign_up_page.dart';
@@ -55,6 +56,13 @@ class CustomNavigator {
       case AppPages.profilePage:
         return MaterialPageRoute(
           builder: (context) => const ProfilePage(),
+          settings: settings,
+        );
+      case AppPages.othersRequestDetailPage:
+        return MaterialPageRoute(
+          builder: (context) => OthersRequestDetailPage(
+            requestModel: settings.arguments as RequestModel,
+          ),
           settings: settings,
         );
       case AppPages.requestDetailPage:

@@ -89,7 +89,7 @@ class AuthHelper {
         print("========================> ${user.uid}");
         // return Right(email);
       }
-      await SharedPreferencesHelper.saveUser(email);
+      await SharedPreferencesHelper.saveUid(email);
       return Right(email);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

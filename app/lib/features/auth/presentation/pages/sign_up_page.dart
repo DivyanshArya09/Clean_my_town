@@ -169,7 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           btnTxt: 'Sign Up',
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
-                              await SharedPreferencesHelper.saveUser(
+                              await SharedPreferencesHelper.saveUid(
                                   _emailTC.text);
                               _refBloc.add(
                                 SignUpWithEmailAndPassword(
