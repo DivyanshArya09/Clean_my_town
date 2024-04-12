@@ -70,25 +70,19 @@ class FireStoreHelpers {
 
   Future<UserModel?> getUser(String token) async {
     try {
-      if (token != null) {
-        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(token)
-            .get();
+      DocumentSnapshot documentSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(token).get();
 
-        if (documentSnapshot.exists) {
-          Map<String, dynamic> data =
-              documentSnapshot.data() as Map<String, dynamic>;
+      if (documentSnapshot.exists) {
+        Map<String, dynamic> data =
+            documentSnapshot.data() as Map<String, dynamic>;
 
-          return UserModel.fromMap(data);
-        }
+        return UserModel.fromMap(data);
       } else {
         throw Exception('No user found');
       }
     } catch (e) {
       throw Exception(e.toString());
     }
-
-    throw Exception('No user found');
   }
 }
