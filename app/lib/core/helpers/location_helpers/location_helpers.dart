@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:app/core/constants/api_contant.dart';
 import 'package:app/core/errors/failures.dart';
-import 'package:app/features/add_request/presentation/models/location_model.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
 

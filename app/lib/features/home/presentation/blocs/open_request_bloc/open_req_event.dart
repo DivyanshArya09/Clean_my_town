@@ -13,8 +13,3 @@ class GetOpenReqEvent extends OpenReqEvent {
   final String area;
   GetOpenReqEvent({required this.area});
 }
-
-final class GetContactDetailsEvent extends OpenReqEvent {
-  final String uid;
-  GetContactDetailsEvent(this.uid);
-}

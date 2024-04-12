@@ -1,13 +1,19 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/styles/app_styles.dart';
+import 'package:app/core/utils/Custom_url_launcher.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/features/home/models/user_model.dart';
 import 'package:app/ui/custom_button.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ContactDetailsCard extends StatelessWidget {
-  const ContactDetailsCard({super.key});
+  final UserModel user;
+  final String requestDate;
+  const ContactDetailsCard(
+      {super.key, required this.user, required this.requestDate});
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +37,16 @@ class ContactDetailsCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.rectangle,
                   borderRadius:
-                      BorderRadius.circular(25.0), // Adjust radius as needed
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      'https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg',
-                    ),
-                    fit:
-                        BoxFit.cover, // Adjust fit as needed (cover or contain)
+                      BorderRadius.circular(50.0), // Adjust radius as needed
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50.0),
+                  child: CachedNetworkImage(
+                    imageUrl: user.profilePicture,
+                    fit: BoxFit.fill,
+                    errorWidget: (context, url, error) {
+                      return const Icon(Icons.person);
+                    },
                   ),
                 ),
               ),
@@ -50,7 +59,7 @@ class ContactDetailsCard extends StatelessWidget {
                       style: AppStyles.roboto_16_600_dark,
                     ),
                     TextSpan(
-                      text: '❝Divyansh arya❞',
+                      text: '❝ ${user.name} ❞',
                       style: AppStyles.activetabStyle.copyWith(fontSize: 16),
                     ),
                   ],
@@ -63,8 +72,7 @@ class ContactDetailsCard extends StatelessWidget {
             children: [
               Text('Opened Since,', style: AppStyles.roboto_14_500_dark),
               CustomSpacers.width14,
-              Text('23/ 06/ 2022,  4:30 PM',
-                  style: AppStyles.roboto_14_500_dark),
+              Text(requestDate, style: AppStyles.roboto_14_500_dark),
             ],
           ),
           CustomSpacers.height12,
@@ -85,22 +93,25 @@ class ContactDetailsCard extends StatelessWidget {
                 ),
                 Spacer(),
                 Text(
-                  '+91 9876543210',
+                  '+91 ${user.number}',
                   style: AppStyles.activetabStyle,
                 ),
               ],
             ),
           ),
           CustomSpacers.height20,
-          CustomButton(
-            btnType: ButtonType.secondary,
-            prefixIcon: Icon(
-              Icons.call,
-              color: AppColors.primary,
+          Visibility(
+            visible: user.number!.isNotEmpty,
+            child: CustomButton(
+              btnType: ButtonType.secondary,
+              prefixIcon: Icon(
+                Icons.call,
+                color: AppColors.primary,
+              ),
+              btnTxt: 'Call Now',
+              onTap: () => CustomUrlLauncher.launchPhoneDialer(user.number!),
             ),
-            btnTxt: 'Call Now',
-            onTap: () {},
-          ),
+          )
         ],
       ),
     );

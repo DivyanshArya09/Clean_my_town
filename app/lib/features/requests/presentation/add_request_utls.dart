@@ -1,4 +1,4 @@
-import 'package:app/features/add_request/presentation/models/location_model.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
 
 class AddRequestUtils {
   static String getArea(Address address) {

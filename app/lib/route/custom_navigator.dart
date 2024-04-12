@@ -1,13 +1,12 @@
-import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/add_request/presentation/models/location_model.dart';
-import 'package:app/features/add_request/presentation/pages/add_request_page.dart';
-import 'package:app/features/add_request/presentation/pages/others_request_detail_page.dart';
-import 'package:app/features/add_request/presentation/pages/request_detail_page.dart';
 import 'package:app/features/auth/presentation/pages/login_page.dart';
 import 'package:app/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:app/features/auth/presentation/pages/verfy_email_page.dart';
 import 'package:app/features/home/presentation/pages/home_page.dart';
 import 'package:app/features/profile/presentation/pages/profile_page.dart';
+import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/features/requests/presentation/pages/add_request_page.dart';
+import 'package:app/features/requests/presentation/pages/request_detail_page.dart';
 import 'package:app/features/shared/splash_screen.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:flutter/material.dart';
@@ -58,13 +57,13 @@ class CustomNavigator {
           builder: (context) => const ProfilePage(),
           settings: settings,
         );
-      case AppPages.othersRequestDetailPage:
-        return MaterialPageRoute(
-          builder: (context) => OthersRequestDetailPage(
-            requestModel: settings.arguments as RequestModel,
-          ),
-          settings: settings,
-        );
+      // case AppPages.othersRequestDetailPage:
+      //   return MaterialPageRoute(
+      //     builder: (context) => OthersRequestDetailPage(
+      //       requestModel: settings.arguments as RequestModel,
+      //     ),
+      //     settings: settings,
+      //   );
       case AppPages.requestDetailPage:
         return MaterialPageRoute(
           builder: (context) {

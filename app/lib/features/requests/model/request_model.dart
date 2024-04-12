@@ -7,7 +7,7 @@ class RequestModel extends Equatable {
   final String area;
   final String profilePic;
   final String description;
-  final String location;
+  final Coordinates coordinates;
   final String title;
   final String dateTime;
   final String user;
@@ -19,7 +19,7 @@ class RequestModel extends Equatable {
     required this.area,
     required this.profilePic,
     required this.description,
-    required this.location,
+    required this.coordinates,
     required this.title,
     required this.user,
     required this.status,
@@ -36,7 +36,7 @@ class RequestModel extends Equatable {
       title: '',
       user: '',
       status: false,
-      location: '',
+      coordinates: Coordinates.empty(),
       dateTime: '',
       fullAddress: '',
     );
@@ -48,7 +48,7 @@ class RequestModel extends Equatable {
       area: json['town'] ?? '',
       profilePic: json['profilePic'] ?? '',
       description: json['description'] ?? '',
-      location: json['location'] ?? '',
+      coordinates: Coordinates.fromJson(json['location']),
       title: json['title'] ?? '',
       user: json['user'] ?? '',
       status: json['status'] ?? false,
@@ -59,7 +59,7 @@ class RequestModel extends Equatable {
   RequestModel copyWith({
     String? title,
     String? description,
-    String? location,
+    Coordinates? coordinates,
     String? image,
     String? area,
     String? user,
@@ -71,7 +71,7 @@ class RequestModel extends Equatable {
     return RequestModel(
       title: title ?? this.title,
       description: description ?? this.description,
-      location: location ?? this.location,
+      coordinates: coordinates ?? this.coordinates,
       image: image ?? this.image,
       area: area ?? this.area,
       user: user ?? this.user,
@@ -88,7 +88,7 @@ class RequestModel extends Equatable {
       'area': area,
       'profilePic': profilePic,
       'description': description,
-      'location': location, // Convert Location object to JSON
+      'location': coordinates.toJson(), // Convert Location object to JSON
       'title': title,
       'user': user,
       'status': status,
@@ -99,5 +99,39 @@ class RequestModel extends Equatable {
 
   @override
   List<Object?> get props =>
-      [image, area, profilePic, description, location, title, user, status];
+      [image, area, profilePic, description, coordinates, title, user, status];
+}
+
+class Coordinates extends Equatable {
+  final double lat;
+  final double lon;
+
+  Coordinates({
+    required this.lat,
+    required this.lon,
+  });
+
+  factory Coordinates.fromJson(Map json) {
+    return Coordinates(
+      lat: json['lat'] ?? '',
+      lon: json['lon'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'lat': lat,
+      'lon': lon,
+    };
+  }
+
+  factory Coordinates.empty() {
+    return Coordinates(
+      lat: 0,
+      lon: 0,
+    );
+  }
+
+  @override
+  List<Object?> get props => [lat, lon];
 }

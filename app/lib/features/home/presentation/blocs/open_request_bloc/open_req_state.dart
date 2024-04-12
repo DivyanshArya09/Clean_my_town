@@ -20,15 +20,3 @@ final class OpenReqError extends OpenReqState {
   final String message;
   const OpenReqError(this.message);
 }
-
-final class GetContactDetailsSuccess extends OpenReqState {
-  final UserModel userModel;
-  const GetContactDetailsSuccess(this.userModel);
-}
-
-final class GetContactDetailsError extends OpenReqState {
-  final String message;
-  const GetContactDetailsError(this.message);
-}
-
-final class GetContactDetailsLoading extends OpenReqState {}

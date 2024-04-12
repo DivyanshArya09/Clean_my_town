@@ -2,7 +2,7 @@ import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/add_request/model/request_model.dart';
+import 'package:app/features/requests/model/request_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

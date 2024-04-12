@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/core/helpers/realtime_data_helpers/realtime_data_base_helper.dart';
-import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/home/models/user_model.dart';
+import 'package:app/features/requests/model/request_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -40,21 +39,6 @@ class OpenReqBloc extends Bloc<OpenReqEvent, OpenReqState> {
             (r) => r.isEmpty
                 ? emit(OpenReqError('No Active Requests in Your Area..'))
                 : emit(OpenReqLoaded(r)));
-      },
-    );
-    on<GetContactDetailsEvent>(
-      (event, emit) async {
-        try {
-          emit(OpenReqLoading());
-          final result = await fireStoreHelpers.getUser(event.uid);
-          if (result != null) {
-            emit(GetContactDetailsSuccess(result));
-          } else {
-            emit(OpenReqError('No Contact Details.....'));
-          }
-        } catch (e) {
-          emit(OpenReqError(e.toString()));
-        }
       },
     );
   }

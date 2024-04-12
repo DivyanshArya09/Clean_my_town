@@ -3,11 +3,10 @@ import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
-import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/home/presentation/bloc/open_req_bloc.dart';
+import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/home/widgets/request_tile.dart';
-import 'package:app/route/app_pages.dart';
-import 'package:app/route/custom_navigator.dart';
+import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/features/requests/presentation/pages/others_request_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -35,9 +34,6 @@ class _OthersRequestState extends State<OthersRequest> {
     return BlocConsumer<OpenReqBloc, OpenReqState>(
       bloc: widget.openReqBloc,
       listener: (context, state) {
-        if (state is OpenReqLoaded) {
-          ToastHelpers.showToast('success');
-        }
         if (state is OpenReqError) {
           ToastHelpers.showToast(state.message);
         }
@@ -126,10 +122,14 @@ class _OthersRequestState extends State<OthersRequest> {
             child: RequestTile(
               request: requests[index],
               onTap: () {
-                CustomNavigator.pushTo(
+                Navigator.push(
                   context,
-                  AppPages.othersRequestDetailPage,
-                  arguments: requests[index],
+                  MaterialPageRoute(
+                    builder: (context) => OthersRequestDetailPage(
+                      requestModel: requests[index],
+                      openReqBloc: widget.openReqBloc,
+                    ),
+                  ),
                 );
               },
             ),

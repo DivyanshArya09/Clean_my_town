@@ -7,10 +7,10 @@ import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/date_time_formatter.dart';
 import 'package:app/core/utils/toast_utils.dart';
-import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/add_request/presentation/add_request_utls.dart';
-import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
-import 'package:app/features/add_request/presentation/models/location_model.dart';
+import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/features/requests/presentation/add_request_utls.dart';
+import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
 import 'package:app/features/shared/loading_page.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:app/ui/custom_text_field.dart';
@@ -309,8 +309,10 @@ class _AddRequestPageState extends State<AddRequestPage> {
         reqModel = reqModel.copyWith(
           title: _titleTC.text,
           description: _descriptionTC.text,
-          location:
-              "${widget.location.lat.toString()}-${widget.location.lon.toString()}",
+          coordinates: Coordinates(
+            lat: widget.location.lat,
+            lon: widget.location.lon,
+          ),
           area: area,
           status: true,
           fullAddress: widget.location.displayName,

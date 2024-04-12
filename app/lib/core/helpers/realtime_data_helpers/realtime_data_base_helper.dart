@@ -4,8 +4,8 @@ import 'package:app/core/errors/failures.dart';
 import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
 import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/core/helpers/user_helper.dart';
-import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/home/models/user_model.dart';
+import 'package:app/features/requests/model/request_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_database/firebase_database.dart';
 

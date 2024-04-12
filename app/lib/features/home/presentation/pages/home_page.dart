@@ -2,12 +2,12 @@ import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/add_request/presentation/add_request_utls.dart';
-import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
-import 'package:app/features/add_request/presentation/models/location_model.dart';
-import 'package:app/features/home/presentation/bloc/open_req_bloc.dart';
+import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/home/tab_views/my_request.dart';
 import 'package:app/features/home/tab_views/other_request.dart';
+import 'package:app/features/requests/presentation/add_request_utls.dart';
+import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                           if (state is MyRequestSuccess) {
                             return Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.all(5),
+                              padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppColors.primary,
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                           if (state is OpenReqLoaded) {
                             return Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.all(5),
+                              padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppColors.primary,

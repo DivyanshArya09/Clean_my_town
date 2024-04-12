@@ -4,8 +4,8 @@ import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/managers/location_manager.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/add_request/model/request_model.dart';
 import 'package:app/features/home/widgets/request_tile.dart';
+import 'package:app/features/requests/model/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -181,10 +181,10 @@ class _RequestDetailPageState extends State<RequestDetailPage> {
       visible: startLat.isNotEmpty && startLng.isNotEmpty,
       child: InkWell(
         onTap: () async {
-          List<String> parts = widget.request.location.split('-');
-          endLat = parts[0].trim();
-          endLng = parts[1].trim();
-          await _openMapsForDirections(startLat, startLng, endLat, endLng);
+          // List<String> parts = widget.request.coordinates.split('-');
+          // endLat = parts[0].trim();
+          // endLng = parts[1].trim();
+          // await _openMapsForDirections(startLat, startLng, endLat, endLng);
         },
         child: Container(
             padding: const EdgeInsets.symmetric(

@@ -11,7 +11,7 @@ class AppImages {
   //===========================ICONS=====================================
   static const locationIcon = 'assets/icons/location.png';
   static const walkIcon = 'assets/icons/walk.png';
-  static const motercycleIcon = 'assets/icons/motercycle.png';
+  static const motercycleIcon = 'assets/icons/motorcycle.png';
   static const cycleIcon = 'assets/icons/cycle.png';
   static const rightArrow = 'assets/icons/right-arrow.png';
   static const distance = 'assets/icons/double-headed.png';

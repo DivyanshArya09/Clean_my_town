@@ -13,6 +13,7 @@ class CustomButton extends StatelessWidget {
   final double btnHeight;
   final double btnWidth;
   final ButtonType? btnType;
+  final Widget? centerWidget;
   final double? btnRadius;
   final Icon? prefixIcon;
 
@@ -20,6 +21,7 @@ class CustomButton extends StatelessWidget {
       {super.key,
       required this.btnTxt,
       required this.onTap,
+      this.centerWidget,
       this.prefixIcon,
       this.btnType = ButtonType.primary,
       this.btnRadius = DEFAULT_BORDER_RADIUS,
@@ -43,29 +45,31 @@ class CustomButton extends StatelessWidget {
           color: AppColors.primary,
         ),
         height: btnHeight,
-        child: prefixIcon == null
-            ? Text(
-                btnTxt,
-                textAlign: TextAlign.center,
-                style: AppStyles.roboto_14_500_light
-                    .copyWith(color: AppColors.white),
-              )
-            : Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    prefixIcon!,
-                    CustomSpacers.width12,
-                    Text(
-                      '$btnTxt',
-                      textAlign: TextAlign.center,
-                      style: AppStyles.roboto_14_500_light
-                          .copyWith(color: AppColors.white),
+        child: centerWidget != null
+            ? centerWidget!
+            : prefixIcon == null
+                ? Text(
+                    btnTxt,
+                    textAlign: TextAlign.center,
+                    style: AppStyles.roboto_14_500_light
+                        .copyWith(color: AppColors.white),
+                  )
+                : Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        prefixIcon!,
+                        CustomSpacers.width12,
+                        Text(
+                          '$btnTxt',
+                          textAlign: TextAlign.center,
+                          style: AppStyles.roboto_14_500_light
+                              .copyWith(color: AppColors.white),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
       ),
     );
   }
