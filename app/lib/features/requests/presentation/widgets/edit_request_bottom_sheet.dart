@@ -15,8 +15,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class EditRequestBottomSheet extends StatefulWidget {
   final RequestModel requestModel;
   final RequestBloc requestBloc;
+  final Function(RequestModel? request) onEdit;
   const EditRequestBottomSheet(
-      {super.key, required this.requestModel, required this.requestBloc});
+      {super.key,
+      required this.requestModel,
+      required this.requestBloc,
+      required this.onEdit});
 
   @override
   State<EditRequestBottomSheet> createState() => _EditRequestBottomSheetState();
@@ -52,6 +56,18 @@ class _EditRequestBottomSheetState extends State<EditRequestBottomSheet> {
     return BlocConsumer<RequestBloc, RequestState>(
       listener: (context, state) {
         if (state is UpdateRequestSuccess) {
+          widget.onEdit(
+            widget.onEdit(
+              widget.requestModel.copyWith(
+                title: _titleTC.text,
+                description: _descriptionTC.text,
+                fullAddress: _locationTC.text,
+              ),
+            ),
+          );
+          widget.requestBloc.add(
+            GetMyRequestEvent(),
+          );
           Navigator.pop(context);
         }
 

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/core/data/realtime_data_sources/realtimeDB.dart';
 import 'package:app/features/requests/presentation/models/request_model.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -11,19 +12,20 @@ part 'open_req_event.dart';
 part 'open_req_state.dart';
 
 class OpenReqBloc extends Bloc<OpenReqEvent, OpenReqState> {
-  final String area;
   bool _isClosed = false;
   late StreamSubscription<DatabaseEvent> _requestSubscription;
   RealtimeDBdataSources realtimeDBHelper = RealtimeDBdataSources();
   FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
-  OpenReqBloc({required this.area}) : super(OpenReqInitialState()) {
+  OpenReqBloc() : super(OpenReqInitialState()) {
     on<OpenReqInitial>(
       (event, emit) async {
-        _requestSubscription = realtimeDBHelper.getRealTimeData(area).listen(
+        print(
+            '===========================>>>>>>>>>>>>>>>>>>> this is area $AREA');
+        _requestSubscription = realtimeDBHelper.getRealTimeData(AREA).listen(
           (event) {
             if (event.snapshot.value != null && !_isClosed) {
               print('==========SUCCESSSSS=============> this is event $event');
-              add(GetOpenReqEvent(area: area));
+              add(GetOpenReqEvent(area: AREA));
             }
           },
         );

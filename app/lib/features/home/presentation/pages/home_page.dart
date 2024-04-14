@@ -5,9 +5,9 @@ import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/home/tab_views/my_request.dart';
 import 'package:app/features/home/tab_views/other_request.dart';
-import 'package:app/features/requests/presentation/add_request_utls.dart';
 import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
 import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/injection_container.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +36,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    _openReqRefBloc = OpenReqBloc(
-        area: AddRequestUtils.getArea(widget.locationModel.address));
+    _openReqRefBloc = sl.get<OpenReqBloc>();
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         _reqRefBloc.add(GetMyRequestEvent());

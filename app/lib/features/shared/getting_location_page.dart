@@ -1,8 +1,10 @@
 import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/features/requests/presentation/add_request_utls.dart';
 import 'package:app/features/requests/presentation/blocs/geolocator_bloc/geolocator_bloc.dart';
 import 'package:app/features/shared/animated_container.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +54,7 @@ class _GettingLocationPageState extends State<GettingLocationPage> {
             bloc: _referenceBloc,
             listener: (context, state) {
               if (state is GeolocatorSuccess) {
+                AREA = AddRequestUtils.getArea(state.locationModel.address);
                 Future.delayed(
                   const Duration(seconds: 4),
                   () {

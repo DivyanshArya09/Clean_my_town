@@ -18,12 +18,15 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  String? userId;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         SharedPreferencesHelper.getUser().then(
           (value) {
+            userId = value;
+            setState(() {});
             if (value != null) {
               Future.delayed(
                 const Duration(seconds: 2),

@@ -6,7 +6,6 @@ import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/core/utils/validators.dart';
 import 'package:app/features/auth/presentation/bloc/sign_up_bloc.dart';
 import 'package:app/features/auth/presentation/widgets/or_widget.dart';
-import 'package:app/features/shared/splash_screen.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
@@ -51,14 +50,7 @@ class _LoginPageState extends State<LoginPage> {
             current is LoginSuccess,
         listener: (context, state) {
           if (state is LoginSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return const SplashScreen();
-                },
-              ),
-            );
+            CustomNavigator.pushReplace(context, AppPages.gettingLocation);
             ToastHelpers.showToast('login in Success');
           }
           if (state is LoginErr) {

@@ -5,6 +5,7 @@ import 'package:app/core/constants/default_contants.dart';
 import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/contact_bloc/contact_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/map_bloc/map_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:app/features/requests/presentation/widgets/contact_details_card.
 import 'package:app/features/requests/presentation/widgets/distance_card.dart';
 import 'package:app/features/requests/presentation/widgets/edit_request_bottom_sheet.dart';
 import 'package:app/features/requests/presentation/widgets/status_card.dart';
+import 'package:app/injection_container.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -21,14 +23,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 
+// ignore: must_be_immutable
 class OthersRequestDetailPage extends StatefulWidget {
-  final RequestModel requestModel;
+  RequestModel requestModel;
   final RequestType? requestType;
   final RequestBloc? requestBloc;
-  const OthersRequestDetailPage(
+  final OpenReqBloc? openReqBloc;
+  OthersRequestDetailPage(
       {super.key,
       required this.requestModel,
       this.requestType,
+      this.openReqBloc,
       this.requestBloc});
 
   @override
@@ -78,176 +83,194 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: widget.requestModel.image,
-              fit: BoxFit.fitHeight,
-              errorWidget: (context, url, error) {
-                return const Icon(Icons.error);
+      body: widget.requestType == RequestType.my
+          ? _buildDetailPage(widget.requestModel)
+          : BlocBuilder<OpenReqBloc, OpenReqState>(
+              buildWhen: (previous, current) => current is OpenReqLoaded,
+              bloc: sl.get<OpenReqBloc>(),
+              builder: (context, state) {
+                print('--======================<  I am here');
+                return _buildDetailPage(
+                  (state as OpenReqLoaded)
+                      .requests
+                      .where((element) =>
+                          element.docId == widget.requestModel.docId)
+                      .first,
+                );
               },
             ),
-          ),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 50.h,
-            left: 16.h,
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomSpacers.height12,
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Text(
-                      widget.requestModel.title,
-                      style: AppStyles.heading2Light,
-                    ),
-                  ),
-                  CustomSpacers.height12,
-                  Row(
-                    // crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.location_on, color: AppColors.err),
-                      CustomSpacers.width8,
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: Text(
-                          softWrap: true,
-                          textAlign: TextAlign.start,
-                          maxLines: 6,
-                          overflow: TextOverflow.ellipsis,
-                          widget.requestModel.fullAddress,
-                          style: AppStyles.roboto_14_500_light,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            child: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(
-                Icons.close,
-                color: AppColors.white,
-              ),
-            ),
-            right: 10,
-            top: 20.h,
-          ),
-          DraggableScrollableSheet(
-            expand: true,
-            snap: true,
-            controller: _sheetController,
-            initialChildSize: .17,
-            minChildSize: .17,
-            // initialChildSize: .2,
-            builder: (context, scrollController) {
-              return DecoratedBox(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(DEFAULT_BORDER_RADIUS),
-                    topRight: Radius.circular(DEFAULT_BORDER_RADIUS),
-                  ),
-                ),
-                child: StreamBuilder<double>(
-                    stream: _sheetStreamController.stream,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Stack(
-                          children: [
-                            SingleChildScrollView(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: DEFAULT_Horizontal_PADDING,
-                                vertical: DEFAULT_VERTICAL_PADDING,
-                              ),
-                              controller: scrollController,
-                              child: Column(
-                                children: [
-                                  if (snapshot.data == null ||
-                                      snapshot.data! < .9) ...[
-                                    Container(
-                                      alignment: Alignment.center,
-                                      padding: EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.lightGray,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        Icons.keyboard_arrow_up,
-                                        color: AppColors.primary,
-                                      ),
-                                    ),
-                                    CustomSpacers.height12,
-                                    AnimateText(
-                                      text: "Swipe up to see details",
-                                    ),
-                                  ] else ...[
-                                    CustomSpacers.height21,
-                                    Text(
-                                      "Details",
-                                      style: AppStyles.roboto_16_400_dark,
-                                    ),
-                                    CustomSpacers.height12,
-                                    _buildBody(),
-                                  ],
-                                ],
-                              ),
-                            ),
-                            Visibility(
-                              visible: snapshot.data! > .9,
-                              child: Align(
-                                alignment: Alignment.bottomCenter,
-                                child: Container(
-                                  color: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: DEFAULT_VERTICAL_PADDING,
-                                      horizontal: 16),
-                                  child: CustomButton(
-                                    // btnType: ButtonType.secondary,
-                                    btnTxt:
-                                        widget.requestType == RequestType.others
-                                            ? 'Accept'
-                                            : "Edit Request",
-                                    onTap: () {
-                                      if (widget.requestType ==
-                                          RequestType.others) {}
-                                      if (widget.requestType ==
-                                          RequestType.my) {
-                                        return _showEditBottomSheet();
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ),
-                            )
-                          ],
-                        );
-                      }
-                      return Container();
-                    }),
-              );
-            },
-          ),
-        ],
-      ),
     );
   }
 
-  _buildBody() {
+  _buildDetailPage(RequestModel requestModel) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: CachedNetworkImage(
+            imageUrl: requestModel.image,
+            fit: BoxFit.fitHeight,
+            errorWidget: (context, url, error) {
+              return const Icon(Icons.error);
+            },
+          ),
+        ),
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 50.h,
+          left: 16.h,
+          child: Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomSpacers.height12,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  child: Text(
+                    requestModel.title,
+                    style: AppStyles.heading2Light,
+                  ),
+                ),
+                CustomSpacers.height12,
+                Row(
+                  // crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.location_on, color: AppColors.err),
+                    CustomSpacers.width8,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      child: Text(
+                        softWrap: true,
+                        textAlign: TextAlign.start,
+                        maxLines: 6,
+                        overflow: TextOverflow.ellipsis,
+                        requestModel.fullAddress,
+                        style: AppStyles.roboto_14_500_light,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          child: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.close,
+              color: AppColors.white,
+            ),
+          ),
+          right: 10,
+          top: 20.h,
+        ),
+        DraggableScrollableSheet(
+          expand: true,
+          snap: true,
+          controller: _sheetController,
+          initialChildSize: .17,
+          minChildSize: .17,
+          // initialChildSize: .2,
+          builder: (context, scrollController) {
+            return DecoratedBox(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(DEFAULT_BORDER_RADIUS),
+                  topRight: Radius.circular(DEFAULT_BORDER_RADIUS),
+                ),
+              ),
+              child: StreamBuilder<double>(
+                  stream: _sheetStreamController.stream,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Stack(
+                        children: [
+                          SingleChildScrollView(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: DEFAULT_Horizontal_PADDING,
+                              vertical: DEFAULT_VERTICAL_PADDING,
+                            ),
+                            controller: scrollController,
+                            child: Column(
+                              children: [
+                                if (snapshot.data == null ||
+                                    snapshot.data! < .9) ...[
+                                  Container(
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.lightGray,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.keyboard_arrow_up,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                  CustomSpacers.height12,
+                                  AnimateText(
+                                    text: "Swipe up to see details",
+                                  ),
+                                ] else ...[
+                                  CustomSpacers.height21,
+                                  Text(
+                                    "Details",
+                                    style: AppStyles.roboto_16_400_dark,
+                                  ),
+                                  CustomSpacers.height12,
+                                  _buildBody(requestModel),
+                                ],
+                              ],
+                            ),
+                          ),
+                          Visibility(
+                            visible: snapshot.data! > .9,
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Container(
+                                color: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: DEFAULT_VERTICAL_PADDING,
+                                    horizontal: 16),
+                                child: CustomButton(
+                                  // btnType: ButtonType.secondary,
+                                  btnTxt:
+                                      widget.requestType == RequestType.others
+                                          ? 'Accept'
+                                          : "Edit Request",
+                                  onTap: () {
+                                    if (widget.requestType ==
+                                        RequestType.others) {}
+                                    if (widget.requestType == RequestType.my) {
+                                      return _showEditBottomSheet();
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    }
+                    return Container();
+                  }),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  _buildBody(RequestModel requestModel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -261,7 +284,7 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: CachedNetworkImage(
-              imageUrl: widget.requestModel.image,
+              imageUrl: requestModel.image,
               fit: BoxFit.cover,
               errorWidget: (context, url, error) {
                 return const Icon(Icons.error);
@@ -277,7 +300,7 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           ),
           CustomSpacers.height12,
           DistanceCard(
-            destination: widget.requestModel.coordinates,
+            destination: requestModel.coordinates,
             mapBloc: _mapBloc,
           ),
         ],
@@ -298,7 +321,7 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
         SizedBox(
           width: MediaQuery.of(context).size.width * .9,
           child: Text(
-            widget.requestModel.description,
+            requestModel.description,
             softWrap: true,
             textAlign: TextAlign.start,
             style: AppStyles.roboto_14_400_dark,
@@ -310,14 +333,14 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           style: AppStyles.roboto_16_400_dark,
         ),
         CustomSpacers.height12,
-        _buildContactDetails(),
+        _buildContactDetails(requestModel),
         CustomSpacers.height40,
         CustomSpacers.height40,
       ],
     );
   }
 
-  _buildContactDetails() {
+  _buildContactDetails(RequestModel requestModel) {
     return BlocBuilder<ContactBloc, ContactState>(
       bloc: _contactBloc,
       buildWhen: (previous, current) =>
@@ -329,7 +352,7 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           return ContactDetailsCard(
             requestType: widget.requestType!,
             user: state.userModel,
-            requestDate: widget.requestModel.dateTime,
+            requestDate: requestModel.dateTime,
           );
         }
         return Shimmer.fromColors(
@@ -354,6 +377,12 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
       builder: (context) => EditRequestBottomSheet(
         requestModel: widget.requestModel,
         requestBloc: widget.requestBloc!,
+        onEdit: (requestModel) {
+          if (requestModel != null) {
+            widget.requestModel = requestModel;
+            setState(() {});
+          }
+        },
       ),
     );
   }

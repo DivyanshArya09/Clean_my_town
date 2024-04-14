@@ -579,7 +579,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             }
                             return null;
                           },
-                          controller: _nameTC,
+                          controller: _numberTC,
                           onChanged: (value) {
                             _nameStream.add(value);
                           },
@@ -607,7 +607,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     _streamController.add(
                                       profile.copyWith(
                                           isChanged: true,
-                                          number: _nameTC.text),
+                                          number: _numberTC.text),
                                     );
                                   }
                                 }
