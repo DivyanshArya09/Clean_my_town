@@ -340,23 +340,23 @@ class _ProfilePageState extends State<ProfilePage> {
             content: data is File
                 ? Image.file(
                     data,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.scaleDown,
                   )
                 : Image.network(
                     data as String,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.scaleDown,
                   ),
           ),
         ),
         child: data is File
             ? Image.file(
                 data,
-                fit: BoxFit.fill,
+                fit: BoxFit.scaleDown,
               )
             : data is String && data.isNotEmpty
                 ? Image.network(
                     data,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.scaleDown,
                   )
                 : Icon(
                     Icons.person,
