@@ -1,4 +1,4 @@
-import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomUrlLauncher {

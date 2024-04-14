@@ -1,5 +1,6 @@
 import 'dart:core';
 
+import 'package:app/core/enums/request_enums.dart';
 import 'package:equatable/equatable.dart';
 
 class RequestModel extends Equatable {
@@ -11,8 +12,9 @@ class RequestModel extends Equatable {
   final String title;
   final String dateTime;
   final String user;
-  final bool status;
+  final RequestStatus status;
   final String fullAddress;
+  final String? docId;
 
   RequestModel({
     required this.image,
@@ -25,6 +27,7 @@ class RequestModel extends Equatable {
     required this.status,
     required this.dateTime,
     this.fullAddress = '',
+    this.docId = '',
   });
 
   factory RequestModel.empty() {
@@ -35,14 +38,17 @@ class RequestModel extends Equatable {
       description: '',
       title: '',
       user: '',
-      status: false,
+      status: RequestStatus.pending,
       coordinates: Coordinates.empty(),
       dateTime: '',
       fullAddress: '',
+      docId: '',
     );
   }
 
   factory RequestModel.fromJson(Map json) {
+    print(
+        '===========================> ${json['status'].toString().requestStatus}');
     return RequestModel(
       image: json['image'] ?? '',
       area: json['town'] ?? '',
@@ -51,9 +57,10 @@ class RequestModel extends Equatable {
       coordinates: Coordinates.fromJson(json['location']),
       title: json['title'] ?? '',
       user: json['user'] ?? '',
-      status: json['status'] ?? false,
+      status: json['status'].toString().requestStatus,
       dateTime: json['dateTime'] ?? '',
       fullAddress: json['fullAddress'] ?? '',
+      docId: json['docId'] ?? '',
     );
   }
   RequestModel copyWith({
@@ -64,9 +71,10 @@ class RequestModel extends Equatable {
     String? area,
     String? user,
     String? profilePic,
-    bool? status,
+    RequestStatus? status,
     String? dateTime,
     String? fullAddress,
+    String? docId,
   }) {
     return RequestModel(
       title: title ?? this.title,
@@ -79,6 +87,7 @@ class RequestModel extends Equatable {
       status: status ?? this.status,
       dateTime: dateTime ?? this.dateTime,
       fullAddress: fullAddress ?? this.fullAddress,
+      docId: docId ?? this.docId,
     );
   }
 
@@ -91,15 +100,25 @@ class RequestModel extends Equatable {
       'location': coordinates.toJson(), // Convert Location object to JSON
       'title': title,
       'user': user,
-      'status': status,
+      'status': status.textValue,
       'dateTime': dateTime,
-      'fullAddress': fullAddress
+      'fullAddress': fullAddress,
+      'docId': docId,
     };
   }
 
   @override
-  List<Object?> get props =>
-      [image, area, profilePic, description, coordinates, title, user, status];
+  List<Object?> get props => [
+        image,
+        area,
+        profilePic,
+        description,
+        coordinates,
+        title,
+        user,
+        status,
+        docId
+      ];
 }
 
 class Coordinates extends Equatable {
@@ -134,4 +153,36 @@ class Coordinates extends Equatable {
 
   @override
   List<Object?> get props => [lat, lon];
+}
+
+class RequestUpdateEntity {
+  final String? fullAddress;
+  final String? title;
+  final String? description;
+  final RequestStatus? status;
+
+  RequestUpdateEntity({
+    this.fullAddress,
+    this.title,
+    this.description,
+    this.status,
+  });
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+
+    if (fullAddress != null) {
+      data['fullAddress'] = fullAddress;
+    }
+    if (title != null && title!.isNotEmpty) {
+      data['title'] = title;
+    }
+    if (description != null && description!.isNotEmpty) {
+      data['description'] = description;
+    }
+    if (status != null) {
+      data['status'] = status?.textValue;
+    }
+    return data;
+  }
 }

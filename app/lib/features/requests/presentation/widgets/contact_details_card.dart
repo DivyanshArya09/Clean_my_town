@@ -1,5 +1,6 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/default_contants.dart';
+import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/Custom_url_launcher.dart';
 import 'package:app/core/utils/custom_spacers.dart';
@@ -11,9 +12,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ContactDetailsCard extends StatelessWidget {
   final UserModel user;
+  final RequestType requestType;
   final String requestDate;
   const ContactDetailsCard(
-      {super.key, required this.user, required this.requestDate});
+      {super.key,
+      required this.user,
+      required this.requestDate,
+      required this.requestType});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +64,9 @@ class ContactDetailsCard extends StatelessWidget {
                       style: AppStyles.roboto_16_600_dark,
                     ),
                     TextSpan(
-                      text: '❝ ${user.name} ❞',
+                      text: requestType == RequestType.others
+                          ? '❝ ${user.name} ❞'
+                          : "You",
                       style: AppStyles.activetabStyle.copyWith(fontSize: 16),
                     ),
                   ],
@@ -101,7 +108,8 @@ class ContactDetailsCard extends StatelessWidget {
           ),
           CustomSpacers.height20,
           Visibility(
-            visible: user.number!.isNotEmpty,
+            visible:
+                user.number!.isNotEmpty && requestType == RequestType.others,
             child: CustomButton(
               btnType: ButtonType.secondary,
               prefixIcon: Icon(
@@ -109,7 +117,11 @@ class ContactDetailsCard extends StatelessWidget {
                 color: AppColors.primary,
               ),
               btnTxt: 'Call Now',
-              onTap: () => CustomUrlLauncher.launchPhoneDialer(user.number!),
+              onTap: () {
+                if (requestType == RequestType.others) {
+                  CustomUrlLauncher.launchPhoneDialer(user.number!);
+                }
+              },
             ),
           )
         ],

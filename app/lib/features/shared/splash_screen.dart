@@ -1,6 +1,6 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
-import 'package:app/core/helpers/user_helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/home/presentation/auth_gate.dart';

@@ -1,10 +1,10 @@
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/user_helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 
-class FireStoreHelpers {
+class FireStoreDataSources {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<Either<Failure, void>> saveUser(UserModel user) async {
@@ -50,21 +50,13 @@ class FireStoreHelpers {
   Future<void> updatelocation(String town) async {
     String? token = await SharedPreferencesHelper.getUser();
     if (token != null) {
-      DocumentReference documentSnapshot =
-          await FirebaseFirestore.instance.collection('users').doc(token);
-      documentSnapshot
-          .update({'location': town})
-          .then(
-            (value) => {
-              print(
-                  "location updated---------------------------------------->"),
-            },
-          )
-          .onError(
-            (error, stackTrace) => {
-              throw Exception(error.toString()),
-            },
-          );
+      try {
+        DocumentReference documentSnapshot =
+            await FirebaseFirestore.instance.collection('users').doc(token);
+        documentSnapshot.update({'location': town});
+      } catch (e) {
+        throw Exception(e.toString());
+      }
     }
   }
 
@@ -76,7 +68,6 @@ class FireStoreHelpers {
       if (documentSnapshot.exists) {
         Map<String, dynamic> data =
             documentSnapshot.data() as Map<String, dynamic>;
-
         return UserModel.fromMap(data);
       } else {
         throw Exception('No user found');

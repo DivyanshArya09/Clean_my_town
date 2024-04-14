@@ -15,4 +15,7 @@ class AppImages {
   static const cycleIcon = 'assets/icons/cycle.png';
   static const rightArrow = 'assets/icons/right-arrow.png';
   static const distance = 'assets/icons/double-headed.png';
+  static const pendingWork = 'assets/icons/garbage.png';
+  static const inProgressWork = 'assets/icons/cleaning.png';
+  static const workDone = 'assets/icons/workdone.gif';
 }

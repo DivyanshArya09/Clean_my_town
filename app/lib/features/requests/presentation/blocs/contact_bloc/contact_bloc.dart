@@ -1,4 +1,4 @@
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -7,7 +7,7 @@ part 'contact_event.dart';
 part 'contact_state.dart';
 
 class ContactBloc extends Bloc<ContactEvent, ContactState> {
-  FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+  FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
   ContactBloc() : super(ContactInitial()) {
     on<ContactEvent>((event, emit) {
       // TODO: implement event handler

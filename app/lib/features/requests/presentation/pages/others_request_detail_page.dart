@@ -2,15 +2,18 @@ import 'dart:async';
 
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/default_contants.dart';
+import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
-import 'package:app/features/requests/model/request_model.dart';
 import 'package:app/features/requests/presentation/blocs/contact_bloc/contact_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/map_bloc/map_bloc.dart';
+import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:app/features/requests/presentation/widgets/animated_text.dart';
 import 'package:app/features/requests/presentation/widgets/contact_details_card.dart';
 import 'package:app/features/requests/presentation/widgets/distance_card.dart';
+import 'package:app/features/requests/presentation/widgets/edit_request_bottom_sheet.dart';
+import 'package:app/features/requests/presentation/widgets/status_card.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +23,13 @@ import 'package:shimmer/shimmer.dart';
 
 class OthersRequestDetailPage extends StatefulWidget {
   final RequestModel requestModel;
-  final OpenReqBloc openReqBloc;
+  final RequestType? requestType;
+  final RequestBloc? requestBloc;
   const OthersRequestDetailPage(
-      {super.key, required this.requestModel, required this.openReqBloc});
+      {super.key,
+      required this.requestModel,
+      this.requestType,
+      this.requestBloc});
 
   @override
   State<OthersRequestDetailPage> createState() =>
@@ -186,7 +193,8 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                                     ),
                                     CustomSpacers.height12,
                                     AnimateText(
-                                        text: "Swipe up to see details"),
+                                      text: "Swipe up to see details",
+                                    ),
                                   ] else ...[
                                     CustomSpacers.height21,
                                     Text(
@@ -210,8 +218,18 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                                       horizontal: 16),
                                   child: CustomButton(
                                     // btnType: ButtonType.secondary,
-                                    btnTxt: 'Accept',
-                                    onTap: () {},
+                                    btnTxt:
+                                        widget.requestType == RequestType.others
+                                            ? 'Accept'
+                                            : "Edit Request",
+                                    onTap: () {
+                                      if (widget.requestType ==
+                                          RequestType.others) {}
+                                      if (widget.requestType ==
+                                          RequestType.my) {
+                                        return _showEditBottomSheet();
+                                      }
+                                    },
                                   ),
                                 ),
                               ),
@@ -252,15 +270,25 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           ),
         ),
         CustomSpacers.height12,
-        Text(
-          'Distance',
-          style: AppStyles.roboto_16_400_dark,
-        ),
-        CustomSpacers.height12,
-        DistanceCard(
-          destination: widget.requestModel.coordinates,
-          mapBloc: _mapBloc,
-        ),
+        if (widget.requestType == RequestType.others) ...[
+          Text(
+            'Distance',
+            style: AppStyles.roboto_16_400_dark,
+          ),
+          CustomSpacers.height12,
+          DistanceCard(
+            destination: widget.requestModel.coordinates,
+            mapBloc: _mapBloc,
+          ),
+        ],
+        if (widget.requestType == RequestType.my) ...[
+          Text(
+            'Status',
+            style: AppStyles.roboto_16_400_dark,
+          ),
+          CustomSpacers.height12,
+          StatusCard(),
+        ],
         CustomSpacers.height12,
         Text(
           'Details',
@@ -299,6 +327,7 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
       builder: (context, state) {
         if (state is GetContactDetailsSuccess) {
           return ContactDetailsCard(
+            requestType: widget.requestType!,
             user: state.userModel,
             requestDate: widget.requestModel.dateTime,
           );
@@ -315,6 +344,17 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           ),
         );
       },
+    );
+  }
+
+  _showEditBottomSheet() {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => EditRequestBottomSheet(
+        requestModel: widget.requestModel,
+        requestBloc: widget.requestBloc!,
+      ),
     );
   }
 }

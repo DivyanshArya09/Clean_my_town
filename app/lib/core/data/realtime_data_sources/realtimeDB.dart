@@ -1,17 +1,17 @@
 import 'dart:io';
 
+import 'package:app/core/data/firebase_storage_data_sources/firebase_storage.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
-import 'package:app/core/helpers/user_helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
-import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class RealtimeDBHelper {
-  FireBaseStorageHelper fireStorageHelpers = FireBaseStorageHelper();
-  FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+class RealtimeDBdataSources {
+  FireBaseStorageDataSources fireStorageHelpers = FireBaseStorageDataSources();
+  FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
 
   DatabaseReference db = FirebaseDatabase.instance.ref().child('requests');
 
@@ -36,56 +36,26 @@ class RealtimeDBHelper {
     return db.orderByChild('area').equalTo(area).onValue;
   }
 
-  // Future<Either<Failure, List<RequestModel>>> getOthersRquest() async {
-  //   // String? town = await SharedPreferencesHelper.getLocation();
-
-  //   await db.orderByChild('town').equalTo('Patiala District').once().then(
-  //       (value) =>
-  //           print('==============================>${value.snapshot.value}'));
-  //   List<RequestModel> results = [];
-  //   // print(town);
-  //   // try {
-  //   //   DataSnapshot snapshot = await db.once().then((value) => value.snapshot);
-  //   //   if (snapshot.value != null) {
-  //   //     Map values = snapshot.value as Map;
-  //   //     values.forEach((key, value) {
-  //   //       if (value['town'].toString().toLowerCase() == 'delhi'.toLowerCase()) {
-  //   //         RequestModel model = RequestModel(
-  //   //             image: value['image'],
-  //   //             town: value['town'],
-  //   //             profilePic: value['profilePic'],
-  //   //             description: value['description'],
-  //   //             location: value['location'],
-  //   //             title: value['title'],
-  //   //             user: value['user'],
-  //   //             status: value['status'],
-  //   //             dateTime: value['status']);
-
-  //   //         results.add(model);
-  //   //       }
-
-  //   //       print('i am in block');
-  //   //       print(results);
-  //   //     });
-  //   //   } else {
-  //   //     print('Snapshot is empty');
-  //   //   }
-  //   // } catch (error) {
-  //   //   return Left(ServerFailure(message: error.toString()));
-  //   // }
-  //   // print(results);
-  //   // return Right(results);
-  // }
-
   Future<Either<Failure, void>> addRequest(
       RequestModel data, File image) async {
     final uniquekey = DateTime.now().microsecondsSinceEpoch.toString();
+    data = data.copyWith(docId: uniquekey);
     try {
       String imageUrl = await fireStorageHelpers.uploadImage(image);
       String id = await fireStoreHelpers.updateMyRequestInFirestore(uniquekey);
       await db.child(uniquekey).set(
             data.copyWith(image: imageUrl, user: id).toJson(),
           );
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+    return const Right(null);
+  }
+
+  Future<Either<Failure, void>> UpdateRequest(
+      Map<String, dynamic> data, String docId) async {
+    try {
+      await db.child(docId).update(data);
     } catch (e) {
       return Left(ServerFailure(message: e.toString()));
     }

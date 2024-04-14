@@ -1,5 +1,5 @@
 import 'package:app/core/constants/app_colors.dart';
-import 'package:app/core/helpers/user_helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/auth/presentation/pages/login_page.dart';

@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/user_helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:crypto/crypto.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthHelper {
+class AuthDataSources {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 

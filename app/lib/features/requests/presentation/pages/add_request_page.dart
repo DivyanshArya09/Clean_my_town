@@ -3,14 +3,15 @@ import 'dart:io';
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
+import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/date_time_formatter.dart';
 import 'package:app/core/utils/toast_utils.dart';
-import 'package:app/features/requests/model/request_model.dart';
 import 'package:app/features/requests/presentation/add_request_utls.dart';
 import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
 import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:app/features/shared/loading_page.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:app/ui/custom_text_field.dart';
@@ -210,21 +211,14 @@ class _AddRequestPageState extends State<AddRequestPage> {
                                                   hint: "Add title",
                                                 ),
                                                 CustomSpacers.height16,
-                                                InkWell(
-                                                  onTap: () {
-                                                    ToastHelpers.showToast(
-                                                        "Read only");
-                                                  },
-                                                  child: CustomTextField(
-                                                    disabled: true,
-                                                    controller: _locationTC,
-                                                    hint: "Location",
-                                                    suffix: SizedBox(
-                                                      height: 20.h,
-                                                      child: Image.asset(
-                                                        AppImages.mapIcon,
-                                                        fit: BoxFit.fitHeight,
-                                                      ),
+                                                CustomTextField(
+                                                  controller: _locationTC,
+                                                  hint: "Location",
+                                                  suffix: SizedBox(
+                                                    height: 20.h,
+                                                    child: Image.asset(
+                                                      AppImages.mapIcon,
+                                                      fit: BoxFit.fitHeight,
                                                     ),
                                                   ),
                                                 ),
@@ -314,7 +308,7 @@ class _AddRequestPageState extends State<AddRequestPage> {
             lon: widget.location.lon,
           ),
           area: area,
-          status: true,
+          status: RequestStatus.pending,
           fullAddress: widget.location.displayName,
           dateTime: DateTime.now().toTime(),
         );

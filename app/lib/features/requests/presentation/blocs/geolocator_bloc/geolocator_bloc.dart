@@ -1,7 +1,7 @@
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
-import 'package:app/core/helpers/location_helpers/location_helpers.dart';
-import 'package:app/core/helpers/user_helper.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
+import 'package:app/core/data/location_datasources/location.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/core/managers/location_manager.dart';
 import 'package:app/features/requests/presentation/models/location_model.dart';
 import 'package:bloc/bloc.dart';
@@ -11,8 +11,8 @@ part 'geolocator_event.dart';
 part 'geolocator_state.dart';
 
 class GeolocatorBloc extends Bloc<GeolocatorEvent, GeolocatorState> {
-  LocationHelper locationHelper = LocationHelper();
-  FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+  LocationDataSources locationHelper = LocationDataSources();
+  FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
 
   GeolocatorBloc() : super(GeolocatorInitial()) {
     on<GetLocation>(

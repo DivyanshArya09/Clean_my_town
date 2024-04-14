@@ -42,3 +42,13 @@ class ImagePickerSuccess extends RequestState {
   final File imagePath;
   ImagePickerSuccess({required this.imagePath});
 }
+
+class UpdateRequestLoading extends RequestState {}
+
+class UpdateRequestSuccess extends RequestState {}
+
+class UpdateRequestFailed extends RequestState {
+  final String message;
+
+  UpdateRequestFailed({required this.message});
+}

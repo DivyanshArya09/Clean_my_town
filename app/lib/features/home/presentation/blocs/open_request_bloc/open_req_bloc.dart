@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
-import 'package:app/core/helpers/realtime_data_helpers/realtime_data_base_helper.dart';
-import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
+import 'package:app/core/data/realtime_data_sources/realtimeDB.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -14,8 +14,8 @@ class OpenReqBloc extends Bloc<OpenReqEvent, OpenReqState> {
   final String area;
   bool _isClosed = false;
   late StreamSubscription<DatabaseEvent> _requestSubscription;
-  RealtimeDBHelper realtimeDBHelper = RealtimeDBHelper();
-  FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+  RealtimeDBdataSources realtimeDBHelper = RealtimeDBdataSources();
+  FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
   OpenReqBloc({required this.area}) : super(OpenReqInitialState()) {
     on<OpenReqInitial>(
       (event, emit) async {

@@ -1,6 +1,6 @@
 import 'package:app/core/managers/location_manager.dart';
 import 'package:app/core/utils/Custom_url_launcher.dart';
-import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';

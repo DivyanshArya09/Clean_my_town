@@ -1,13 +1,13 @@
 import 'dart:io';
 
+import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/core/errors/failures.dart';
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 // Upload image to Firebase Storage
-class FireBaseStorageHelper {
-  FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+class FireBaseStorageDataSources {
+  FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
   Future<String> uploadImage(File imagePath) async {
     try {
       final path = 'files/${imagePath.path}.jpg';

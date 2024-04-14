@@ -12,3 +12,9 @@ class AddRequest extends RequestEvent {
 class GetMyRequestEvent extends RequestEvent {}
 
 class PickImageEvent extends RequestEvent {}
+
+class UpdateRequestEvent extends RequestEvent {
+  final RequestUpdateEntity entity;
+  final String docId;
+  UpdateRequestEvent({required this.entity, required this.docId});
+}

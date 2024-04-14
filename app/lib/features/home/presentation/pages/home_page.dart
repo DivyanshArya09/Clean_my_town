@@ -1,5 +1,5 @@
 import 'package:app/core/constants/app_colors.dart';
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
@@ -25,7 +25,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _reqRefBloc = RequestBloc();
   late OpenReqBloc _openReqRefBloc;
-  final FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+  final FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
 
   @override
   void dispose() {

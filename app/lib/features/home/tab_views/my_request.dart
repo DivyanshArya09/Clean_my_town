@@ -1,12 +1,14 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
+import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/home/widgets/request_tile.dart';
-import 'package:app/features/requests/model/request_model.dart';
 import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
 import 'package:app/features/requests/presentation/models/location_model.dart';
-import 'package:app/features/requests/presentation/pages/request_detail_page.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
+import 'package:app/features/requests/presentation/pages/others_request_detail_page.dart';
+// import 'package:app/features/requests/presentation/pages/request_detail_page.dart';
 import 'package:app/features/shared/loading_page.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
@@ -39,6 +41,11 @@ class _MyRequestsState extends State<MyRequests> {
   Widget build(BuildContext context) {
     return BlocBuilder<RequestBloc, RequestState>(
       bloc: widget.bloc,
+      buildWhen: (previous, current) =>
+          current is MyRequestSuccess ||
+          current is MyRequestLoading ||
+          current is MyRequestEmpty ||
+          current is MYRequestError,
       builder: (context, state) {
         if (state is MyRequestEmpty) {
           return _buildEmptyBody();
@@ -96,13 +103,16 @@ class _MyRequestsState extends State<MyRequests> {
             padding: EdgeInsets.only(top: index == 0 ? 24 : 0),
             child: RequestTile(
               request: requests[index],
-              onTap: () => CustomNavigator.pushTo(
+              onTap: () => Navigator.push(
                 context,
-                AppPages.requestDetailPage,
-                arguments: {
-                  'request': requests[index],
-                  'requestType': RequestType.myRequest,
-                },
+                MaterialPageRoute(
+                  builder: (context) => OthersRequestDetailPage(
+                    requestModel: requests[index],
+                    requestType: RequestType.my,
+                    requestBloc: widget.bloc,
+                    // openReqBloc: widget.openReqBloc,
+                  ),
+                ),
               ),
             ),
           );

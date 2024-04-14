@@ -1,8 +1,8 @@
 import 'dart:io';
 
+import 'package:app/core/data/realtime_data_sources/realtimeDB.dart';
 import 'package:app/core/helpers/image_picker_helper/image_picker_helper.dart';
-import 'package:app/core/helpers/realtime_data_helpers/realtime_data_base_helper.dart';
-import 'package:app/features/requests/model/request_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -12,7 +12,7 @@ part 'request_state.dart';
 class RequestBloc extends Bloc<RequestEvent, RequestState> {
 //  late StreamSubscription _positionSubscription;
 
-  RealtimeDBHelper realtimeDBHelper = RealtimeDBHelper();
+  RealtimeDBdataSources realtimeDBHelper = RealtimeDBdataSources();
 
   RequestBloc() : super(RequestInitial()) {
     //  _positionSubscription = realtimeDBHelper.getRealTimeData().listen((event) {
@@ -53,6 +53,19 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
               ? emit(ImagePickerError(error: "No image selected());"))
               : emit(ImagePickerSuccess(imagePath: file)),
         );
+      },
+    );
+    on<UpdateRequestEvent>(
+      (event, emit) async {
+        emit(UpdateRequestLoading());
+        try {
+          await realtimeDBHelper.UpdateRequest(
+              event.entity.toJson(), event.docId);
+
+          emit(UpdateRequestSuccess());
+        } catch (e) {
+          emit(UpdateRequestFailed(message: e.toString()));
+        }
       },
     );
   }

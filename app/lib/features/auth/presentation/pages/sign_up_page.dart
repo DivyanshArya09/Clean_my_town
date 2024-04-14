@@ -1,6 +1,6 @@
 import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
-import 'package:app/core/helpers/user_helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
