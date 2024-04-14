@@ -5,6 +5,7 @@ class AppImages {
   static const markerIcon = 'assets/images/marker.png';
   static const loading = 'assets/images/loading2.gif';
   static const gettingLocation = 'assets/images/location.gif';
+  static const mapImage = 'assets/images/map.jpg';
   static const bgImg = 'assets/images/signupbg.jpeg';
   static const splashScreenImage = 'assets/images/splashscreenimage.svg';
 
