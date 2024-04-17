@@ -1,3 +1,4 @@
+import 'package:app/core/entities/fcm_entity.dart';
 import 'package:app/core/errors/failures.dart';
 import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
@@ -6,6 +7,21 @@ import 'package:dartz/dartz.dart';
 
 class FireStoreDataSources {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  Future<Either<Failure, bool>> updateFCMToken(FCMUpdateEntity entity) async {
+    try {
+      String? token = await SharedPreferencesHelper.getUser();
+      if (token != null) {
+        await firestore
+            .collection('users')
+            .doc(token)
+            .update({'fcmToken': entity.token});
+      }
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+    return const Right(true);
+  }
 
   Future<Either<Failure, void>> saveUser(UserModel user) async {
     try {

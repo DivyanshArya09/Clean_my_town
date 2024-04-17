@@ -15,6 +15,7 @@ class RequestModel extends Equatable {
   final RequestStatus status;
   final String fullAddress;
   final String? docId;
+  final String token;
 
   RequestModel({
     required this.image,
@@ -28,6 +29,7 @@ class RequestModel extends Equatable {
     required this.dateTime,
     this.fullAddress = '',
     this.docId = '',
+    required this.token,
   });
 
   factory RequestModel.empty() {
@@ -43,6 +45,7 @@ class RequestModel extends Equatable {
       dateTime: '',
       fullAddress: '',
       docId: '',
+      token: '',
     );
   }
 
@@ -61,34 +64,35 @@ class RequestModel extends Equatable {
       dateTime: json['dateTime'] ?? '',
       fullAddress: json['fullAddress'] ?? '',
       docId: json['docId'] ?? '',
+      token: json['token'] ?? '',
     );
   }
-  RequestModel copyWith({
-    String? title,
-    String? description,
-    Coordinates? coordinates,
-    String? image,
-    String? area,
-    String? user,
-    String? profilePic,
-    RequestStatus? status,
-    String? dateTime,
-    String? fullAddress,
-    String? docId,
-  }) {
+  RequestModel copyWith(
+      {String? title,
+      String? description,
+      Coordinates? coordinates,
+      String? image,
+      String? area,
+      String? user,
+      String? profilePic,
+      RequestStatus? status,
+      String? dateTime,
+      String? fullAddress,
+      String? docId,
+      String? token}) {
     return RequestModel(
-      title: title ?? this.title,
-      description: description ?? this.description,
-      coordinates: coordinates ?? this.coordinates,
-      image: image ?? this.image,
-      area: area ?? this.area,
-      user: user ?? this.user,
-      profilePic: profilePic ?? this.profilePic,
-      status: status ?? this.status,
-      dateTime: dateTime ?? this.dateTime,
-      fullAddress: fullAddress ?? this.fullAddress,
-      docId: docId ?? this.docId,
-    );
+        title: title ?? this.title,
+        description: description ?? this.description,
+        coordinates: coordinates ?? this.coordinates,
+        image: image ?? this.image,
+        area: area ?? this.area,
+        user: user ?? this.user,
+        profilePic: profilePic ?? this.profilePic,
+        status: status ?? this.status,
+        dateTime: dateTime ?? this.dateTime,
+        fullAddress: fullAddress ?? this.fullAddress,
+        docId: docId ?? this.docId,
+        token: token ?? this.token);
   }
 
   Map<String, dynamic> toJson() {
@@ -104,6 +108,7 @@ class RequestModel extends Equatable {
       'dateTime': dateTime,
       'fullAddress': fullAddress,
       'docId': docId,
+      'token': token
     };
   }
 
@@ -117,7 +122,8 @@ class RequestModel extends Equatable {
         title,
         user,
         status,
-        docId
+        docId,
+        token
       ];
 }
 

@@ -1,7 +1,9 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/data/firestore_datasources/firestore.dart';
+import 'package:app/core/managers/notification_manager.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/features/home/bloc/fcm_bloc.dart';
 import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/home/tab_views/my_request.dart';
 import 'package:app/features/home/tab_views/other_request.dart';
@@ -23,7 +25,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _reqRefBloc = RequestBloc();
+  final _reqRefBloc = sl.get<RequestBloc>();
+  final _fcmbloc = FcmBloc();
   late OpenReqBloc _openReqRefBloc;
   final FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
 
@@ -37,6 +40,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     _openReqRefBloc = sl.get<OpenReqBloc>();
+    FCMnotificationManager.requestPermission();
+    FCMnotificationManager.getDeviceToken().then(
+      (value) => _fcmbloc.add(
+        FCMUpdateEvent(value),
+      ),
+    );
+
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         _reqRefBloc.add(GetMyRequestEvent());
@@ -158,7 +168,7 @@ class _HomePageState extends State<HomePage> {
         ),
         body: TabBarView(
           children: [
-            MyRequests(location: widget.locationModel, bloc: _reqRefBloc),
+            MyRequests(location: widget.locationModel),
             OthersRequest(
               openReqBloc: _openReqRefBloc,
             ),

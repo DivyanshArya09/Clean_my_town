@@ -60,6 +60,8 @@ dependencies:
   get_it: ^7.6.8
   shimmer: ^3.0.0
   flutter_animate: ^4.5.0
+  firebase_messaging: ^14.8.1
+  flutter_local_notifications: ^17.0.1
 
 dev_dependencies:
   flutter_test:

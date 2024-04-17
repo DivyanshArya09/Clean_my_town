@@ -12,6 +12,16 @@ class SharedPreferencesHelper {
     await prefs.setString('uid', value);
   }
 
+  static Future<void> setFCMtoken(String token) async {
+    final prefs = await sl<SharedPreferences>();
+    await prefs.setString('token', token);
+  }
+
+  static Future<String?> getFCMtoken() async {
+    final prefs = await sl<SharedPreferences>();
+    return prefs.getString('token');
+  }
+
   static Future<String?> getUser() async {
     final prefs = await sl<SharedPreferences>();
     return prefs.getString('uid');

@@ -10,6 +10,7 @@ import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:app/features/requests/presentation/pages/others_request_detail_page.dart';
 // import 'package:app/features/requests/presentation/pages/request_detail_page.dart';
 import 'package:app/features/shared/loading_page.dart';
+import 'package:app/injection_container.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -18,17 +19,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MyRequests extends StatefulWidget {
-  final RequestBloc bloc;
   final LocationModel location;
-  const MyRequests({super.key, required this.location, required this.bloc});
+  const MyRequests({super.key, required this.location});
 
   @override
   State<MyRequests> createState() => _MyRequestsState();
 }
 
 class _MyRequestsState extends State<MyRequests> {
+  late RequestBloc _refrenceBloc;
   @override
   void initState() {
+    _refrenceBloc = sl.get<RequestBloc>();
     super.initState();
   }
 
@@ -40,7 +42,7 @@ class _MyRequestsState extends State<MyRequests> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RequestBloc, RequestState>(
-      bloc: widget.bloc,
+      bloc: _refrenceBloc,
       buildWhen: (previous, current) =>
           current is MyRequestSuccess ||
           current is MyRequestLoading ||
@@ -109,7 +111,7 @@ class _MyRequestsState extends State<MyRequests> {
                   builder: (context) => OthersRequestDetailPage(
                     requestModel: requests[index],
                     requestType: RequestType.my,
-                    requestBloc: widget.bloc,
+                    requestBloc: _refrenceBloc,
                     // openReqBloc: widget.openReqBloc,
                   ),
                 ),
