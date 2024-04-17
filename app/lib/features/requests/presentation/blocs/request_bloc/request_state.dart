@@ -52,3 +52,13 @@ class UpdateRequestFailed extends RequestState {
 
   UpdateRequestFailed({required this.message});
 }
+
+class AcceptRequestLoading extends RequestState {}
+
+class AcceptRequestSuccess extends RequestState {}
+
+class AcceptRequestFailed extends RequestState {
+  final String message;
+
+  AcceptRequestFailed({required this.message});
+}

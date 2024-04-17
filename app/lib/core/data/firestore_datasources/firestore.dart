@@ -36,18 +36,31 @@ class FireStoreDataSources {
   }
 
   Future<String> updateMyRequestInFirestore(String request) async {
-    String? docID = await SharedPreferencesHelper.getUser();
-    DocumentReference docRef =
-        FirebaseFirestore.instance.collection('users').doc(docID);
-    docRef.update({
-      'requests': FieldValue.arrayUnion([request]),
-    }).then((value) {
-      print("String added to requests array--------------------------->");
-    }).catchError((error) {
-      print(
-          "Error adding string to requests array: $error---------------------->");
-    });
-    return docID.toString();
+    try {
+      String? docID = await SharedPreferencesHelper.getUser();
+      DocumentReference docRef =
+          FirebaseFirestore.instance.collection('users').doc(docID);
+      docRef.update({
+        'requests': FieldValue.arrayUnion([request]),
+      });
+      return docID.toString();
+    } on Exception catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  Future<String> updateAcceptedRequestInFirestore(String request) async {
+    try {
+      String? docID = await SharedPreferencesHelper.getUser();
+      DocumentReference docRef =
+          FirebaseFirestore.instance.collection('users').doc(docID);
+      docRef.update({
+        'acceptedrequest': FieldValue.arrayUnion([request]),
+      });
+      return docID.toString();
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   Future<Either<Failure, bool>> updateUser(Map<String, dynamic> data) async {

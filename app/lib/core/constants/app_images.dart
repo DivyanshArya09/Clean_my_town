@@ -10,7 +10,9 @@ class AppImages {
   static const splashScreenImage = 'assets/images/splashscreenimage.svg';
 
   //===========================ICONS=====================================
+  static const celebration = 'assets/icons/popper.png';
   static const locationIcon = 'assets/icons/location.png';
+  static const success = 'assets/icons/success.png';
   static const walkIcon = 'assets/icons/walk.png';
   static const motercycleIcon = 'assets/icons/motorcycle.png';
   static const cycleIcon = 'assets/icons/cycle.png';

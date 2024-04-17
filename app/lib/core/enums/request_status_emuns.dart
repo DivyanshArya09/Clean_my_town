@@ -1,0 +1,1 @@
+enum RequestStatus { FAILURE, SUCCESS }

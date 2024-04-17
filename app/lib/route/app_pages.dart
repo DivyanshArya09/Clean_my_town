@@ -9,4 +9,5 @@ class AppPages {
   static const String othersRequestDetailPage = '/othersRequestDetailPage';
   static const String profilePage = '/profilePage';
   static const String gettingLocation = '/gettingLocation';
+  static const String requestStatusPage = '/requestStatusPage';
 }

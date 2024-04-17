@@ -1,4 +1,5 @@
 import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
+import 'package:app/features/requests/presentation/blocs/map_bloc/map_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,6 @@ Future<void> general() async {
 
 void blocs() {
   sl.registerSingleton<OpenReqBloc>(OpenReqBloc());
-
   sl.registerSingleton<RequestBloc>(RequestBloc());
+  sl.registerSingleton<MapBloc>(MapBloc());
 }

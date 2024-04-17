@@ -19,3 +19,8 @@ class UpdateRequestEvent extends RequestEvent {
   final String docId;
   UpdateRequestEvent({required this.entity, required this.docId});
 }
+
+class AcceptRequestEvent extends RequestEvent {
+  final AcceptRequestEnity entity;
+  AcceptRequestEvent({required this.entity});
+}

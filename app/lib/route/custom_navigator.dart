@@ -4,8 +4,10 @@ import 'package:app/features/auth/presentation/pages/verfy_email_page.dart';
 import 'package:app/features/home/presentation/pages/home_page.dart';
 import 'package:app/features/profile/presentation/pages/profile_page.dart';
 import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:app/features/requests/presentation/pages/add_request_page.dart';
 import 'package:app/features/shared/getting_location_page.dart';
+import 'package:app/features/shared/request_status_page.dart';
 import 'package:app/features/shared/splash_screen.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:flutter/material.dart';
@@ -70,19 +72,19 @@ class CustomNavigator {
       //     ),
       //     settings: settings,
       //   );
-      // case AppPages.requestDetailPage:
-      //   return MaterialPageRoute(
-      //     builder: (context) {
-      //       Map data = settings.arguments as Map;
-      //       RequestModel request = data['request'] as RequestModel;
-      //       RequestType requestType = data['requestType'] as RequestType;
-      //       return RequestDetailPage(
-      //         request: request,
-      //         requestType: requestType,
-      //       );
-      //     },
-      //     settings: settings,
-      //   );
+      case AppPages.requestStatusPage:
+        return MaterialPageRoute(
+          builder: (context) {
+            Map data = settings.arguments as Map;
+            Coordinates destination = data['destination'] as Coordinates;
+            String area = data['area'];
+            return RequestStatusPage(
+              destination: destination,
+              area: area,
+            );
+          },
+          settings: settings,
+        );
 
       default:
         return MaterialPageRoute(

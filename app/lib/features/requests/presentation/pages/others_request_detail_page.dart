@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/default_contants.dart';
+import 'package:app/core/entities/accept_request_entity.dart';
 import 'package:app/core/enums/request_enums.dart';
-import 'package:app/core/helpers/notification_helper/notification_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/core/utils/toast_utils.dart';
 import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/contact_bloc/contact_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/map_bloc/map_bloc.dart';
@@ -17,6 +18,8 @@ import 'package:app/features/requests/presentation/widgets/distance_card.dart';
 import 'package:app/features/requests/presentation/widgets/edit_request_bottom_sheet.dart';
 import 'package:app/features/requests/presentation/widgets/status_card.dart';
 import 'package:app/injection_container.dart';
+import 'package:app/route/app_pages.dart';
+import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +33,7 @@ class OthersRequestDetailPage extends StatefulWidget {
   final RequestType? requestType;
   final RequestBloc? requestBloc;
   final OpenReqBloc? openReqBloc;
+
   OthersRequestDetailPage(
       {super.key,
       required this.requestModel,
@@ -47,12 +51,16 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
   late StreamController<double> _sheetStreamController;
   late MapBloc _mapBloc;
   late ContactBloc _contactBloc;
+  late RequestBloc _requestRefBloc;
+  AcceptRequestEnity _acceptRequestEnity = AcceptRequestEnity.toEmpty();
 
   @override
   void initState() {
+    _requestRefBloc = sl.get<RequestBloc>();
     _sheetController = DraggableScrollableController();
     _sheetStreamController = StreamController<double>.broadcast();
-    _mapBloc = MapBloc();
+    _mapBloc = sl.get<MapBloc>();
+    ;
     _contactBloc = ContactBloc();
     _sheetController.addListener(
       () {
@@ -242,27 +250,14 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                                 padding: const EdgeInsets.symmetric(
                                     vertical: DEFAULT_VERTICAL_PADDING,
                                     horizontal: 16),
-                                child: CustomButton(
-                                  // btnType: ButtonType.secondary,
-                                  btnTxt:
-                                      widget.requestType == RequestType.others
-                                          ? 'Accept'
-                                          : "Edit Request",
-                                  onTap: () {
-                                    if (widget.requestType ==
-                                        RequestType.others) {
-                                      print('==============> button pressed');
-                                      NotificationHelper.postNotification(
-                                        "Hello I acceped you request",
-                                        "I am comming as soon as possible",
-                                        requestModel.token,
-                                      );
-                                    }
-                                    if (widget.requestType == RequestType.my) {
-                                      return _showEditBottomSheet();
-                                    }
-                                  },
-                                ),
+                                child: widget.requestType == RequestType.my
+                                    ? CustomButton(
+                                        btnTxt: "Edit Request",
+                                        onTap: () {
+                                          return _showEditBottomSheet();
+                                        },
+                                      )
+                                    : _buildAcceptRequestButton(),
                               ),
                             ),
                           )
@@ -275,6 +270,50 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
           },
         ),
       ],
+    );
+  }
+
+  _buildAcceptRequestButton() {
+    return BlocConsumer<RequestBloc, RequestState>(
+      bloc: _requestRefBloc,
+      listener: (context, state) {
+        if (state is AcceptRequestSuccess) {
+          CustomNavigator.pushReplace(
+            context,
+            AppPages.requestStatusPage,
+            arguments: {
+              "destination": widget.requestModel.coordinates,
+              "area": widget.requestModel.area,
+            },
+          );
+        }
+        if (state is AcceptRequestFailed) {
+          ToastHelpers.showToast('Failed to accept request');
+        }
+      },
+      builder: (context, state) {
+        if (state is AcceptRequestLoading)
+          return CustomButton(
+            btnTxt: 'Accept Request',
+            centerWidget: Center(
+              child: CircularProgressIndicator(
+                color: AppColors.white,
+              ),
+            ),
+            onTap: () {},
+          );
+        return CustomButton(
+          btnTxt: 'Accept Request',
+          onTap: () {
+            _acceptRequestEnity = _acceptRequestEnity.copwith(
+              docId: widget.requestModel.docId,
+              fcmToken: widget.requestModel.token,
+            );
+            _requestRefBloc
+                .add(AcceptRequestEvent(entity: _acceptRequestEnity));
+          },
+        );
+      },
     );
   }
 
