@@ -1,11 +1,15 @@
 import 'package:app/core/constants/app_colors.dart';
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
+import 'package:app/core/managers/notification_manager.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
-import 'package:app/features/add_request/presentation/models/location_model.dart';
+import 'package:app/features/home/bloc/fcm_bloc.dart';
+import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/home/tab_views/my_request.dart';
 import 'package:app/features/home/tab_views/other_request.dart';
+import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/injection_container.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -21,22 +25,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _reqRefBloc = RequestBloc();
-
-  final FireStoreHelpers fireStoreHelpers = FireStoreHelpers();
+  final _reqRefBloc = sl.get<RequestBloc>();
+  final _fcmbloc = FcmBloc();
+  late OpenReqBloc _openReqRefBloc;
+  final FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
 
   @override
   void dispose() {
     _reqRefBloc.close();
+    _openReqRefBloc.close();
     super.dispose();
   }
 
   @override
   void initState() {
+    _openReqRefBloc = sl.get<OpenReqBloc>();
+    FCMnotificationManager.requestPermission();
+    FCMnotificationManager.getDeviceToken().then(
+      (value) => _fcmbloc.add(
+        FCMUpdateEvent(value),
+      ),
+    );
+
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        print('====================< event added');
         _reqRefBloc.add(GetMyRequestEvent());
+        _openReqRefBloc.add(
+          OpenReqInitial(),
+        );
       },
     );
     super.initState();
@@ -94,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                           if (state is MyRequestSuccess) {
                             return Container(
                               alignment: Alignment.center,
-                              padding: EdgeInsets.all(5),
+                              padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: AppColors.primary,
@@ -113,7 +129,35 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Tab(
-                  text: 'Open Requests',
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('Other Requests'),
+                      CustomSpacers.width4,
+                      BlocBuilder<OpenReqBloc, OpenReqState>(
+                        bloc: _openReqRefBloc,
+                        builder: (context, state) {
+                          if (state is OpenReqLoaded) {
+                            return Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: AppColors.primary,
+                              ),
+                              child: Text(
+                                state.requests.length.toString(),
+                                textAlign: TextAlign.center,
+                                style: AppStyles.roboto_14_500_light,
+                              ),
+                            );
+                          }
+                          return SizedBox.shrink();
+                        },
+                      )
+                    ],
+                  ),
                 ),
                 Tab(
                   text: 'Register Complains',
@@ -123,10 +167,11 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         body: TabBarView(
-          physics: const NeverScrollableScrollPhysics(),
           children: [
-            MyRequests(location: widget.locationModel, bloc: _reqRefBloc),
-            const OthersRequest(),
+            MyRequests(location: widget.locationModel),
+            OthersRequest(
+              openReqBloc: _openReqRefBloc,
+            ),
             const Center(
               child: Text(
                 'Register Complains',

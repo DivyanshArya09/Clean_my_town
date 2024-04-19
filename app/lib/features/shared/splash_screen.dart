@@ -1,90 +1,74 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
-import 'package:app/core/helpers/helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/add_request/presentation/bloc/geolocator_bloc.dart';
-import 'package:app/features/home/presentation/auth_gate.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({
+    super.key,
+  });
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  final _geofenceBloc = GeolocatorBloc();
-  String? user;
-
+  String? userId;
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      SharedPreferencesHelper.getString().then((value) {
-        if (value != null) {
-          user = value;
-          setState(() {});
-        }
-      });
-      _geofenceBloc.add(GetCurrentLatLang());
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        SharedPreferencesHelper.getUser().then(
+          (value) {
+            userId = value;
+            setState(() {});
+            if (value != null) {
+              Future.delayed(
+                const Duration(seconds: 2),
+                () {
+                  CustomNavigator.pushReplace(
+                    context,
+                    AppPages.gettingLocation,
+                  );
+                },
+              );
+            } else {
+              CustomNavigator.pushReplace(context, AppPages.signup);
+            }
+          },
+        );
+      },
+    );
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<GeolocatorBloc, GeolocatorState>(
-        bloc: _geofenceBloc,
-        listener: (context, state) {
-          if (state is GeolocatorSuccess) {
-            if (user != null) {
-              CustomNavigator.pushTo(context, AppPages.home,
-                  arguments: state.locationModel);
-            } else {
-              CustomNavigator.pushTo(context, AppPages.signup);
-            }
-          }
-        },
-        builder: (context, state) {
-          if (state is GeolocatorSuccess) {
-            return AuthGate();
-          }
-          if (state is GeolocatorError) {
-            return Center(
-              child: Text(state.error),
-            );
-          }
-          // if (state is GeolocatorLoading) {
-          //   return GettingLocationPage();
-          // }
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(color: AppColors.lightGray),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text('We\'ve been waiting for you.',
-                    style: AppStyles.headingDark),
-                CustomSpacers.height40,
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  child: SvgPicture.asset(
-                    AppImages.splashScreenImage,
-                    fit: BoxFit.fitHeight,
-                  ),
-                )
-              ],
-            ),
-          );
-        },
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(color: AppColors.lightGray),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('We\'ve been waiting for you.', style: AppStyles.headingDark),
+            CustomSpacers.height40,
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              child: SvgPicture.asset(
+                AppImages.splashScreenImage,
+                fit: BoxFit.fitHeight,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

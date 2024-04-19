@@ -1,13 +1,16 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
+import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/add_request/presentation/bloc/bloc/request_bloc.dart';
-import 'package:app/features/add_request/presentation/models/location_model.dart';
-import 'package:app/features/add_request/presentation/pages/request_detail_page.dart';
 import 'package:app/features/home/widgets/request_tile.dart';
+import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
+import 'package:app/features/requests/presentation/pages/others_request_detail_page.dart';
+// import 'package:app/features/requests/presentation/pages/request_detail_page.dart';
 import 'package:app/features/shared/loading_page.dart';
+import 'package:app/injection_container.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:flutter/material.dart';
@@ -16,17 +19,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MyRequests extends StatefulWidget {
-  final RequestBloc bloc;
   final LocationModel location;
-  const MyRequests({super.key, required this.location, required this.bloc});
+  const MyRequests({super.key, required this.location});
 
   @override
   State<MyRequests> createState() => _MyRequestsState();
 }
 
 class _MyRequestsState extends State<MyRequests> {
+  late RequestBloc _refrenceBloc;
   @override
   void initState() {
+    _refrenceBloc = sl.get<RequestBloc>();
     super.initState();
   }
 
@@ -38,7 +42,12 @@ class _MyRequestsState extends State<MyRequests> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RequestBloc, RequestState>(
-      bloc: widget.bloc,
+      bloc: _refrenceBloc,
+      buildWhen: (previous, current) =>
+          current is MyRequestSuccess ||
+          current is MyRequestLoading ||
+          current is MyRequestEmpty ||
+          current is MYRequestError,
       builder: (context, state) {
         if (state is MyRequestEmpty) {
           return _buildEmptyBody();
@@ -96,13 +105,16 @@ class _MyRequestsState extends State<MyRequests> {
             padding: EdgeInsets.only(top: index == 0 ? 24 : 0),
             child: RequestTile(
               request: requests[index],
-              onTap: () => CustomNavigator.pushTo(
+              onTap: () => Navigator.push(
                 context,
-                AppPages.requestDetailPage,
-                arguments: {
-                  'request': requests[index],
-                  'requestType': RequestType.myRequest,
-                },
+                MaterialPageRoute(
+                  builder: (context) => OthersRequestDetailPage(
+                    requestModel: requests[index],
+                    requestType: RequestType.my,
+                    requestBloc: _refrenceBloc,
+                    // openReqBloc: widget.openReqBloc,
+                  ),
+                ),
               ),
             ),
           );

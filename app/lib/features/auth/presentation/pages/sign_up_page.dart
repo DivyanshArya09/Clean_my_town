@@ -1,6 +1,6 @@
 import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
-import 'package:app/core/helpers/helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
@@ -138,6 +138,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                         CustomSpacers.height16,
                         CustomTextField(
+                          keyboardType: TextInputType.emailAddress,
                           hint: 'Enter your Email',
                           controller: _emailTC,
                           validator: (email) {
@@ -168,7 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           btnTxt: 'Sign Up',
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
-                              await SharedPreferencesHelper.saveString(
+                              await SharedPreferencesHelper.saveUid(
                                   _emailTC.text);
                               _refBloc.add(
                                 SignUpWithEmailAndPassword(

@@ -1,8 +1,9 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/constants/default_contants.dart';
+import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/utils/custom_spacers.dart';
-import 'package:app/features/add_request/model/request_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -109,14 +110,14 @@ class RequestTile extends StatelessWidget {
   }
 }
 
-statusTab(bool status) {
+statusTab(RequestStatus status) {
   return Container(
     width: 120.w,
     height: 40.h,
     alignment: Alignment.center,
     padding: EdgeInsets.symmetric(horizontal: DEFAULT_Horizontal_PADDING),
     decoration: BoxDecoration(
-      color: status ? AppColors.primary : AppColors.err,
+      color: status.colorValue,
       borderRadius: BorderRadius.circular(50),
     ),
     child: Row(
@@ -124,7 +125,7 @@ statusTab(bool status) {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          status ? 'Opened' : 'Closed',
+          status.textValue,
           style: AppStyles.roboto_14_500_light,
         ),
         CustomSpacers.width4,

@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import 'package:app/core/helpers/firebase_storage_helper/firebase_storage_helpers.dart';
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
+import 'package:app/core/data/firebase_storage_data_sources/firebase_storage.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/core/helpers/image_picker_helper/image_picker_helper.dart';
+import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
 import 'package:bloc/bloc.dart';
@@ -14,8 +15,9 @@ part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   BuildContext context;
-  FireStoreHelpers _fireStoreHelpers = FireStoreHelpers();
-  FireBaseStorageHelper _fireBaseStorageHelper = FireBaseStorageHelper();
+  FireStoreDataSources _fireStoreHelpers = FireStoreDataSources();
+  FireBaseStorageDataSources _fireBaseStorageHelper =
+      FireBaseStorageDataSources();
   ProfileBloc({required this.context}) : super(ProfileInitial()) {
     on<PickImageEvent>(
       (event, emit) async {
@@ -58,7 +60,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           final result = await _fireBaseStorageHelper.uploadProfilePicture(
             event.profileModel.image!,
           );
-
           result.fold((l) {
             emit(
               ProfileError(message: l.message ?? 'Failed to upload image'),
@@ -87,7 +88,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         },
         (r) {
           if (r) {
-            print('success===========================>');
             emit(ProfileSuccess());
           } else {
             emit(ProfileError(message: 'Failed to upload image'));
@@ -100,8 +100,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       (event, emit) async {
         print('event================> called');
         emit(GetUserLoadingState());
+        String? token = await SharedPreferencesHelper.getUser();
+
+        if (token == null)
+          return emit(GetUserErrorState(message: 'User not found'));
+
         try {
-          final result = await _fireStoreHelpers.getUser();
+          final result = await _fireStoreHelpers.getUser(token);
+
+          if (result == null) {
+            return emit(GetUserErrorState(message: 'User not found'));
+          }
           emit(GetUserSuccessState(user: result));
         } catch (e) {
           emit(GetUserErrorState(message: e.toString()));

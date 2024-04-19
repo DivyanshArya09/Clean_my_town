@@ -1,5 +1,5 @@
-import 'package:app/core/helpers/firestore_helpers/firestore_helpers.dart';
-import 'package:app/features/auth/auth_helpers/auth_helpers.dart';
+import 'package:app/core/data/auth_datasources/auth_helpers.dart';
+import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -8,8 +8,8 @@ part 'sign_up_event.dart';
 part 'sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  final AuthHelper _authHelper = AuthHelper();
-  final FireStoreHelpers _firestoreHelpers = FireStoreHelpers();
+  final AuthDataSources _authHelper = AuthDataSources();
+  final FireStoreDataSources _firestoreHelpers = FireStoreDataSources();
   SignUpBloc() : super(SignUpInitial()) {
     on<SignUpWithEmailAndPassword>((event, emit) async {
       emit(SignUpLoading());

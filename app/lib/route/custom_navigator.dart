@@ -1,13 +1,14 @@
-import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/add_request/presentation/models/location_model.dart';
-import 'package:app/features/add_request/presentation/pages/add_request_page.dart';
-import 'package:app/features/add_request/presentation/pages/request_detail_page.dart';
 import 'package:app/features/auth/presentation/pages/login_page.dart';
 import 'package:app/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:app/features/auth/presentation/pages/verfy_email_page.dart';
-import 'package:app/features/home/presentation/auth_gate.dart';
 import 'package:app/features/home/presentation/pages/home_page.dart';
 import 'package:app/features/profile/presentation/pages/profile_page.dart';
+import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
+import 'package:app/features/requests/presentation/pages/add_request_page.dart';
+import 'package:app/features/shared/getting_location_page.dart';
+import 'package:app/features/shared/request_status_page.dart';
+import 'package:app/features/shared/splash_screen.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +26,16 @@ class CustomNavigator {
         );
       case AppPages.initial:
         return MaterialPageRoute(
-          builder: (context) => const AuthGate(),
+          builder: (context) => SplashScreen(
+              // isUserLoggingIn: settings.arguments as bool,
+              ),
+          settings: settings,
+        );
+      case AppPages.gettingLocation:
+        return MaterialPageRoute(
+          builder: (context) => GettingLocationPage(
+              // isUserLoggingIn: settings.arguments as bool,
+              ),
           settings: settings,
         );
       case AppPages.login:
@@ -55,15 +65,22 @@ class CustomNavigator {
           builder: (context) => const ProfilePage(),
           settings: settings,
         );
-      case AppPages.requestDetailPage:
+      // case AppPages.othersRequestDetailPage:
+      //   return MaterialPageRoute(
+      //     builder: (context) => OthersRequestDetailPage(
+      //       requestModel: settings.arguments as RequestModel,
+      //     ),
+      //     settings: settings,
+      //   );
+      case AppPages.requestStatusPage:
         return MaterialPageRoute(
           builder: (context) {
             Map data = settings.arguments as Map;
-            RequestModel request = data['request'] as RequestModel;
-            RequestType requestType = data['requestType'] as RequestType;
-            return RequestDetailPage(
-              request: request,
-              requestType: requestType,
+            Coordinates destination = data['destination'] as Coordinates;
+            String area = data['area'];
+            return RequestStatusPage(
+              destination: destination,
+              area: area,
             );
           },
           settings: settings,

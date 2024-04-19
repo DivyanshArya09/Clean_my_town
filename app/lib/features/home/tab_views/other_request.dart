@@ -1,48 +1,41 @@
 import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
-import 'package:app/core/helpers/realtime_data_helpers/realtime_data_base_helper.dart';
+import 'package:app/core/enums/request_enums.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/core/utils/toast_utils.dart';
-import 'package:app/features/add_request/model/request_model.dart';
-import 'package:app/features/home/presentation/bloc/open_req_bloc.dart';
+import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
+import 'package:app/features/home/widgets/request_tile.dart';
+import 'package:app/features/requests/presentation/models/request_model.dart';
+import 'package:app/features/requests/presentation/pages/others_request_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class OthersRequest extends StatefulWidget {
-  const OthersRequest({super.key});
+  final OpenReqBloc openReqBloc;
 
+  const OthersRequest({super.key, required this.openReqBloc});
   @override
   State<OthersRequest> createState() => _OthersRequestState();
 }
 
 class _OthersRequestState extends State<OthersRequest> {
-  RealtimeDBHelper realtimeDBHelper = RealtimeDBHelper();
-  final _refBloc = OpenReqBloc();
   @override
   void dispose() {
-    _refBloc.close();
     super.dispose();
   }
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // realtimeDBHelper.getOthersRquest();
-      _refBloc.add(GetOpenReqEvent());
-    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<OpenReqBloc, OpenReqState>(
-      bloc: _refBloc,
+      bloc: widget.openReqBloc,
       listener: (context, state) {
-        if (state is OpenReqLoaded) {
-          ToastHelpers.showToast('success');
-        }
         if (state is OpenReqError) {
           ToastHelpers.showToast(state.message);
         }
@@ -99,7 +92,9 @@ class _OthersRequestState extends State<OthersRequest> {
 
   _buildRequestBody(List<RequestModel> requests) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+      ),
       height: double.maxFinite,
       width: double.maxFinite,
       color: AppColors.lightGray,
@@ -124,42 +119,27 @@ class _OthersRequestState extends State<OthersRequest> {
       child: ListView.separated(
         itemCount: requests.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            onTap: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) {
-              //       return RequestDetailPage(request: requests[index]);
-              //     },
-              //   ),
-              // );
-            },
-            tileColor: AppColors.white,
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: SizedBox(
-                  width: 60, child: Image.network(requests[index].image)),
-            ),
-            trailing: TextButton(
-              onPressed: () {},
-              child:
-                  Text(requests[index].town, style: AppStyles.activetabStyle),
-            ),
-            title: Text(requests[index].title, style: AppStyles.titleStyle),
-            subtitle: Text(
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              requests[index].description,
-              style: AppStyles.roboto_14_500_dark,
+          return Padding(
+            padding: EdgeInsets.only(top: index == 0 ? 24 : 0),
+            child: RequestTile(
+              request: requests[index],
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OthersRequestDetailPage(
+                      requestModel: requests[index],
+                      requestType: RequestType.others,
+                      // openReqBloc: widget.openReqBloc,
+                    ),
+                  ),
+                );
+              },
             ),
           );
         },
         separatorBuilder: (BuildContext context, int index) {
-          return const Divider(
-            thickness: 1,
-            color: AppColors.darkGray,
-          );
+          return CustomSpacers.height12;
         },
       ),
     );
