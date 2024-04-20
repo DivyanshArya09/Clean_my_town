@@ -20,7 +20,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class MyRequests extends StatefulWidget {
   final LocationModel location;
-  const MyRequests({super.key, required this.location});
+  const MyRequests({
+    super.key,
+    required this.location,
+  });
 
   @override
   State<MyRequests> createState() => _MyRequestsState();
@@ -166,6 +169,7 @@ class _MyRequestsState extends State<MyRequests> {
               arguments: widget.location);
         },
         child: Container(
+          margin: EdgeInsets.all(10),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: AppColors.primary,

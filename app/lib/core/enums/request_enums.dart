@@ -12,6 +12,17 @@ enum RequestStatus {
 }
 
 extension RequestStatusExtension on RequestStatus {
+  String get statusValue {
+    switch (this) {
+      case RequestStatus.pending:
+        return "Work has not yet started";
+      case RequestStatus.inProgress:
+        return "Work in progress";
+      case RequestStatus.completed:
+        return "Work completed";
+    }
+  }
+
   String get textValue {
     switch (this) {
       case RequestStatus.pending:

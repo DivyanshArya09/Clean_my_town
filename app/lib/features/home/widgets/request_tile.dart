@@ -120,52 +120,9 @@ statusTab(RequestStatus status) {
       color: status.colorValue,
       borderRadius: BorderRadius.circular(50),
     ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          status.textValue,
-          style: AppStyles.roboto_14_500_light,
-        ),
-        CustomSpacers.width4,
-        Icon(
-          Icons.update,
-          color: AppColors.white,
-        )
-      ],
+    child: Text(
+      status.textValue,
+      style: AppStyles.roboto_14_500_light,
     ),
   );
 }
-
-/**ListTile(
-          trailing: Column(
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: Text(request.town, style: AppStyles.activetabStyle),
-              ),
-              CustomSpacers.height10,
-              Container(
-                alignment: Alignment.center,
-                height: 20.h,
-                width: 70.w,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Text(
-                  'opened',
-                  style: AppStyles.roboto_14_500_light,
-                ),
-              )
-            ],
-          ),
-          title: Text(request.title, style: AppStyles.titleStyle),
-          subtitle: Text(
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            request.description,
-            style: AppStyles.roboto_14_500_dark,
-          ),
-        ), */

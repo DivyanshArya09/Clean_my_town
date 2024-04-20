@@ -5,10 +5,12 @@ import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
 import 'package:app/features/home/bloc/fcm_bloc.dart';
 import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
+import 'package:app/features/home/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:app/features/home/tab_views/my_request.dart';
 import 'package:app/features/home/tab_views/other_request.dart';
 import 'package:app/features/requests/presentation/blocs/request_bloc/request_bloc.dart';
 import 'package:app/features/requests/presentation/models/location_model.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:app/injection_container.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
@@ -26,7 +28,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _reqRefBloc = sl.get<RequestBloc>();
-  final _fcmbloc = FcmBloc();
+  final _fcmbloc = sl.get<FcmBloc>();
+  final _userbloc = sl.get<UserBloc>();
   late OpenReqBloc _openReqRefBloc;
   final FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
 
@@ -49,6 +52,7 @@ class _HomePageState extends State<HomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
+        _userbloc.add(GetUserDetailsEvent());
         _reqRefBloc.add(GetMyRequestEvent());
         _openReqRefBloc.add(
           OpenReqInitial(),
@@ -64,19 +68,48 @@ class _HomePageState extends State<HomePage> {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          leading: GestureDetector(
-            onTap: () => CustomNavigator.pushTo(context, AppPages.profilePage),
-            child: Container(
-              padding: EdgeInsets.all(8),
-              height: 30,
-              width: 30,
-              child: CircleAvatar(
-                backgroundColor: Colors.transparent,
-                backgroundImage: NetworkImage(
-                  'https://i.pinimg.com/736x/f8/66/8e/f8668e5328cfb4938903406948383cf6.jpg',
+          leading: BlocConsumer<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state is GetUserDetailsSuccess) {
+                USERMODEL = state.userModel;
+              }
+            },
+            bloc: _userbloc,
+            builder: (context, state) {
+              if (state is GetUserDetailsSuccess)
+                return GestureDetector(
+                  onTap: () =>
+                      CustomNavigator.pushTo(context, AppPages.profilePage),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    height: 30,
+                    width: 30,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: NetworkImage(
+                        state.userModel.profilePicture,
+                      ),
+                    ),
+                  ),
+                );
+
+              return Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.all(8),
+                height: 30,
+                width: 30,
+                margin: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.darkGray,
                 ),
-              ),
-            ),
+                child: Icon(
+                  Icons.person,
+                  size: 20,
+                  color: AppColors.white,
+                ),
+              );
+            },
           ),
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: AppColors.primary,
@@ -106,6 +139,8 @@ class _HomePageState extends State<HomePage> {
                       CustomSpacers.width4,
                       BlocBuilder<RequestBloc, RequestState>(
                         bloc: _reqRefBloc,
+                        buildWhen: (previous, current) =>
+                            current is MyRequestSuccess,
                         builder: (context, state) {
                           if (state is MyRequestSuccess) {
                             return Container(
@@ -137,6 +172,8 @@ class _HomePageState extends State<HomePage> {
                       CustomSpacers.width4,
                       BlocBuilder<OpenReqBloc, OpenReqState>(
                         bloc: _openReqRefBloc,
+                        buildWhen: (previous, current) =>
+                            current is OpenReqLoaded,
                         builder: (context, state) {
                           if (state is OpenReqLoaded) {
                             return Container(
@@ -168,7 +205,9 @@ class _HomePageState extends State<HomePage> {
         ),
         body: TabBarView(
           children: [
-            MyRequests(location: widget.locationModel),
+            MyRequests(
+              location: widget.locationModel,
+            ),
             OthersRequest(
               openReqBloc: _openReqRefBloc,
             ),

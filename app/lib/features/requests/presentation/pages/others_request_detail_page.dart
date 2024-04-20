@@ -16,7 +16,8 @@ import 'package:app/features/requests/presentation/widgets/animated_text.dart';
 import 'package:app/features/requests/presentation/widgets/contact_details_card.dart';
 import 'package:app/features/requests/presentation/widgets/distance_card.dart';
 import 'package:app/features/requests/presentation/widgets/edit_request_bottom_sheet.dart';
-import 'package:app/features/requests/presentation/widgets/status_card.dart';
+import 'package:app/features/requests/presentation/widgets/set_status_card.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:app/injection_container.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
@@ -163,7 +164,14 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                       ),
                     ),
                   ],
-                )
+                ),
+                CustomSpacers.height12,
+                Text(
+                  requestModel.status.statusValue,
+                  style: AppStyles.headingDark.copyWith(
+                    color: requestModel.status.colorValue,
+                  ),
+                ),
               ],
             ),
           ),
@@ -231,9 +239,18 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                                   ),
                                 ] else ...[
                                   CustomSpacers.height21,
-                                  Text(
-                                    "Details",
-                                    style: AppStyles.roboto_16_400_dark,
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Details",
+                                        style: AppStyles.roboto_16_400_dark,
+                                      ),
+                                      Spacer(),
+                                      IconButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        icon: Icon(Icons.close),
+                                      ),
+                                    ],
                                   ),
                                   CustomSpacers.height12,
                                   _buildBody(requestModel),
@@ -308,6 +325,10 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
             _acceptRequestEnity = _acceptRequestEnity.copwith(
               docId: widget.requestModel.docId,
               fcmToken: widget.requestModel.token,
+              volunteer: VolunteerModel(
+                uid: USERMODEL.email,
+                fcmToken: USERMODEL.token!,
+              ),
             );
             _requestRefBloc
                 .add(AcceptRequestEvent(entity: _acceptRequestEnity));
@@ -357,7 +378,8 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
             style: AppStyles.roboto_16_400_dark,
           ),
           CustomSpacers.height12,
-          StatusCard(),
+          SetStatusCard(requestModel: requestModel),
+          CustomSpacers.height12,
         ],
         CustomSpacers.height12,
         Text(

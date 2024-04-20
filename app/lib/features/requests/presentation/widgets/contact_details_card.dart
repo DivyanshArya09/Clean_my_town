@@ -77,7 +77,7 @@ class ContactDetailsCard extends StatelessWidget {
           CustomSpacers.height12,
           Row(
             children: [
-              Text('Opened Since,', style: AppStyles.roboto_14_500_dark),
+              Text('Date,', style: AppStyles.roboto_14_500_dark),
               CustomSpacers.width14,
               Text(requestDate, style: AppStyles.roboto_14_500_dark),
             ],

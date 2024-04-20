@@ -1,5 +1,3 @@
-// TODO Implement this library.
-
 import 'package:equatable/equatable.dart';
 
 abstract class Failure extends Equatable {

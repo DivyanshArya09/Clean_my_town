@@ -49,13 +49,18 @@ class FireStoreDataSources {
     }
   }
 
-  Future<String> updateAcceptedRequestInFirestore(String request) async {
+  Future<String> updateAcceptedRequestInFirestore(
+      String request, String token) async {
     try {
       String? docID = await SharedPreferencesHelper.getUser();
+
+      print('======================================> docID $docID');
       DocumentReference docRef =
           FirebaseFirestore.instance.collection('users').doc(docID);
       docRef.update({
-        'acceptedrequest': FieldValue.arrayUnion([request]),
+        'acceptedrequest': FieldValue.arrayUnion([
+          {'request': request, 'fcmtoken': token}
+        ]),
       });
       return docID.toString();
     } catch (e) {

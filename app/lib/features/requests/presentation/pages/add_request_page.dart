@@ -13,6 +13,7 @@ import 'package:app/features/requests/presentation/blocs/request_bloc/request_bl
 import 'package:app/features/requests/presentation/models/location_model.dart';
 import 'package:app/features/requests/presentation/models/request_model.dart';
 import 'package:app/features/shared/loading_page.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:app/ui/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -21,22 +22,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AddRequestPage extends StatefulWidget {
   final LocationModel location;
-  const AddRequestPage({super.key, required this.location});
+  const AddRequestPage({
+    super.key,
+    required this.location,
+  });
 
   @override
   State<AddRequestPage> createState() => _AddRequestPageState();
 }
 
 class _AddRequestPageState extends State<AddRequestPage> {
-  // final _geolocatorRefBloc = GeolocatorBloc();
   final _requestRefBloc = RequestBloc();
-  late TextEditingController _titleTC, _locationTC, _descriptionTC;
+  late TextEditingController _titleTC, _locationTC, _descriptionTC, _phoneTC;
   late DraggableScrollableController _sheetController;
   var _formKey = GlobalKey<FormState>();
   RequestModel reqModel = RequestModel.empty();
 
   File? image;
-  // String town = '';
 
   @override
   void initState() {
@@ -44,7 +46,9 @@ class _AddRequestPageState extends State<AddRequestPage> {
     _locationTC = TextEditingController();
     _sheetController = DraggableScrollableController();
     _descriptionTC = TextEditingController();
+    _phoneTC = TextEditingController();
     _locationTC.text = widget.location.displayName;
+    _phoneTC.text = USERMODEL.number ?? '';
     super.initState();
   }
 
@@ -71,15 +75,6 @@ class _AddRequestPageState extends State<AddRequestPage> {
         ],
         child: MultiBlocListener(
           listeners: [
-            // BlocListener<GeolocatorBloc, GeolocatorState>(
-            //   listener: (context, state) {
-            //     if (state is GeolocatorError) {
-            //       ToastHelpers.showToast(state.error);
-            //     } else if (state is GeolocatorSuccess) {
-            //       town = state.locationModel.address.town;
-            //     }
-            //   },
-            // ),
             BlocListener<RequestBloc, RequestState>(
               listener: (context, state) {
                 if (state is RequestError) {
@@ -222,6 +217,25 @@ class _AddRequestPageState extends State<AddRequestPage> {
                                                     ),
                                                   ),
                                                 ),
+                                                CustomSpacers.height16,
+                                                CustomTextField(
+                                                  validator: (p0) {
+                                                    if (p0 == null ||
+                                                        p0.isEmpty) {
+                                                      return "Contact number can't be empty";
+                                                    }
+                                                    return null;
+                                                  },
+                                                  controller: _phoneTC,
+                                                  hint: "contact number",
+                                                  suffix: SizedBox(
+                                                    height: 20.h,
+                                                    child: Icon(
+                                                      Icons.phone,
+                                                      color: AppColors.primary,
+                                                    ),
+                                                  ),
+                                                ),
                                                 CustomSpacers.height10,
                                                 Text(
                                                   'Optional*',
@@ -307,6 +321,7 @@ class _AddRequestPageState extends State<AddRequestPage> {
             lat: widget.location.lat,
             lon: widget.location.lon,
           ),
+          number: _phoneTC.text,
           area: area,
           status: RequestStatus.pending,
           fullAddress: widget.location.displayName,

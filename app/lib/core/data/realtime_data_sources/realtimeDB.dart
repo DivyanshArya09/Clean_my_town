@@ -62,6 +62,33 @@ class RealtimeDBdataSources {
     return const Right(null);
   }
 
+  Future<Either<Failure, void>> setVolunteers(
+      VolunteerModel data, String docId) async {
+    try {
+      final response = await db.child(docId).child('volunteers').once();
+
+      List<VolunteerModel> results = [];
+      if (response.snapshot.exists) {
+        Map values = response.snapshot.value as Map;
+        values.forEach(
+          (key, value) {
+            results.add(VolunteerModel.fromJson(value as Map));
+          },
+        );
+      }
+      results.add(data);
+
+      print("result=================================> ${results.first}");
+      await db
+          .child(docId)
+          .child('volunteers')
+          .set(results.map((e) => e.toJson()).toList());
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+    return const Right([]);
+  }
+
   Future<Either<Failure, List<RequestModel>>> getRequests() async {
     try {
       String? token = await SharedPreferencesHelper.getUser();

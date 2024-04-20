@@ -5,6 +5,7 @@ class UserModel {
   final List<String> requests;
   final String location;
   final String profilePicture;
+  final String? token;
   String? number;
 
   UserModel({
@@ -15,6 +16,7 @@ class UserModel {
     required this.location,
     required this.profilePicture,
     this.number,
+    this.token,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -26,6 +28,7 @@ class UserModel {
       location: map['location'] ?? '',
       profilePicture: map['profilePicture'] ?? '',
       number: map['number'] ?? '',
+      token: map['fcmToken'] ?? '',
     );
   }
 

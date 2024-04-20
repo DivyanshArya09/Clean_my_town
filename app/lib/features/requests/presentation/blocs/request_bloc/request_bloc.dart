@@ -8,6 +8,7 @@ import 'package:app/core/helpers/notification_helper/notification_helper.dart';
 import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/requests/presentation/models/request_model.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -25,9 +26,15 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
       (event, emit) async {
         emit(RequestLoading());
         String? token = await SharedPreferencesHelper.getFCMtoken();
+
+        if (USERMODEL.number!.isEmpty) {
+          await fireStoreDataSources
+              .updateUser({'number': event.requestModel.number});
+        }
         if (token == null) {
           print('i am here===============================================');
         } else {
+          print('token is =======================================>$token');
           event.requestModel = event.requestModel.copyWith(
             token: token,
           );
@@ -88,16 +95,23 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
       (event, emit) async {
         emit(AcceptRequestLoading());
         try {
-          await fireStoreDataSources
-              .updateAcceptedRequestInFirestore(event.entity.docId);
-
           UserModel? _user = await SharedPreferencesHelper.getUserData();
+
+          if (event.entity.volunteer != null) {
+            final result = await realtimeDBHelper.setVolunteers(
+                event.entity.volunteer!, event.entity.docId);
+
+            result.fold(
+                (failure) => emit(MYRequestError(error: failure.message ?? "")),
+                (r) {});
+          }
+          await fireStoreDataSources.updateAcceptedRequestInFirestore(
+              _user!.email, event.entity.fcmToken);
 
           String? userName = _user?.name ?? 'a volunteer';
 
           String notificationBodyText =
               "Your cleaning request has been accepted by $userName. Thank you for your contribution! ";
-
           await NotificationHelper.postNotification(
             event.entity.notificationTitle!,
             notificationBodyText,

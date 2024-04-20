@@ -12,6 +12,7 @@ import 'package:app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
 import 'package:app/features/profile/presentation/widgets/logout_dialog.dart';
 import 'package:app/features/profile/widgets/profile_tile.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/route/custom_navigator.dart';
 import 'package:app/ui/custom_button.dart';
@@ -117,6 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           if (state is GetUserSuccessState) {
             user = state.user;
+            USERMODEL = user;
             profile = profile.copyWith(
               name: user.name,
               email: user.email,
@@ -136,6 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
             );
           }
         },
+        buildWhen: (previous, current) => current is! ImagePickerError,
         builder: (context, state) {
           if (state is GetUserLoadingState) {
             return const Center(

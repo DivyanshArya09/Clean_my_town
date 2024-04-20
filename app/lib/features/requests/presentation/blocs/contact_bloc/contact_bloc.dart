@@ -9,10 +9,6 @@ part 'contact_state.dart';
 class ContactBloc extends Bloc<ContactEvent, ContactState> {
   FireStoreDataSources fireStoreHelpers = FireStoreDataSources();
   ContactBloc() : super(ContactInitial()) {
-    on<ContactEvent>((event, emit) {
-      // TODO: implement event handler
-    });
-
     on<GetContactDetailsEvent>(
       (event, emit) async {
         try {

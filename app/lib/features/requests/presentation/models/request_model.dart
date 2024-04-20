@@ -6,6 +6,7 @@ import 'package:equatable/equatable.dart';
 class RequestModel extends Equatable {
   final String image;
   final String area;
+  final String number;
   final String profilePic;
   final String description;
   final Coordinates coordinates;
@@ -16,6 +17,7 @@ class RequestModel extends Equatable {
   final String fullAddress;
   final String? docId;
   final String token;
+  final List<VolunteerModel>? volunteers;
 
   RequestModel({
     required this.image,
@@ -29,7 +31,9 @@ class RequestModel extends Equatable {
     required this.dateTime,
     this.fullAddress = '',
     this.docId = '',
+    this.volunteers,
     required this.token,
+    required this.number,
   });
 
   factory RequestModel.empty() {
@@ -46,6 +50,7 @@ class RequestModel extends Equatable {
       fullAddress: '',
       docId: '',
       token: '',
+      number: '',
     );
   }
 
@@ -65,6 +70,11 @@ class RequestModel extends Equatable {
       fullAddress: json['fullAddress'] ?? '',
       docId: json['docId'] ?? '',
       token: json['token'] ?? '',
+      number: json['number'] ?? '',
+      volunteers: json['volunteers'] != null
+          ? List<VolunteerModel>.from(
+              json['volunteers'].map((x) => VolunteerModel.fromJson(x)))
+          : null,
     );
   }
   RequestModel copyWith(
@@ -79,6 +89,7 @@ class RequestModel extends Equatable {
       String? dateTime,
       String? fullAddress,
       String? docId,
+      String? number,
       String? token}) {
     return RequestModel(
         title: title ?? this.title,
@@ -92,6 +103,7 @@ class RequestModel extends Equatable {
         dateTime: dateTime ?? this.dateTime,
         fullAddress: fullAddress ?? this.fullAddress,
         docId: docId ?? this.docId,
+        number: number ?? this.number,
         token: token ?? this.token);
   }
 
@@ -108,7 +120,10 @@ class RequestModel extends Equatable {
       'dateTime': dateTime,
       'fullAddress': fullAddress,
       'docId': docId,
-      'token': token
+      'token': token,
+      'volunteers': volunteers != null
+          ? volunteers!.map((x) => x.toJson()).toList()
+          : null,
     };
   }
 
@@ -166,12 +181,14 @@ class RequestUpdateEntity {
   final String? title;
   final String? description;
   final RequestStatus? status;
+  final List<VolunteerModel>? volunteers;
 
   RequestUpdateEntity({
     this.fullAddress,
     this.title,
     this.description,
     this.status,
+    this.volunteers,
   });
 
   Map<String, dynamic> toJson() {
@@ -189,6 +206,47 @@ class RequestUpdateEntity {
     if (status != null) {
       data['status'] = status?.textValue;
     }
+    if (volunteers != null) {
+      data['volunteers'] = volunteers!.map((x) => x.toJson()).toList();
+    }
     return data;
+  }
+}
+
+class VolunteerModel {
+  final String uid;
+  final String fcmToken;
+
+  const VolunteerModel({
+    required this.uid,
+    required this.fcmToken,
+  });
+
+  factory VolunteerModel.fromJson(Map json) {
+    return VolunteerModel(
+      uid: json['uid'] ?? '',
+      fcmToken: json['fcmToken'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'fcmToken': fcmToken,
+    };
+  }
+
+  VolunteerModel copyWith({String? uid, String? fcmToken}) {
+    return VolunteerModel(
+      uid: uid ?? this.uid,
+      fcmToken: fcmToken ?? this.fcmToken,
+    );
+  }
+
+  factory VolunteerModel.empty() {
+    return const VolunteerModel(
+      uid: '',
+      fcmToken: '',
+    );
   }
 }
