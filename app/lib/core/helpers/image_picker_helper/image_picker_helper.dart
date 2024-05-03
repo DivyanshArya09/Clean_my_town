@@ -34,7 +34,7 @@ class ImagePickerhelper {
       ) as XFile;
       return result;
     } catch (e) {
-      print('=====================================> $e');
+      print('============IMAGE PICKER ERR=========================> $e');
       rethrow;
     }
   }

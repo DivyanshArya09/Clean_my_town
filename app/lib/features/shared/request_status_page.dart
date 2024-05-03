@@ -2,15 +2,17 @@ import 'package:app/core/constants/app_colors.dart';
 import 'package:app/core/constants/app_images.dart';
 import 'package:app/core/styles/app_styles.dart';
 import 'package:app/core/utils/custom_spacers.dart';
+import 'package:app/features/home/presentation/blocs/open_request_bloc/open_req_bloc.dart';
 import 'package:app/features/requests/presentation/blocs/map_bloc/map_bloc.dart';
 import 'package:app/features/requests/presentation/models/request_model.dart';
+import 'package:app/global_variables/global_varialbles.dart';
 import 'package:app/injection_container.dart';
 import 'package:app/route/app_pages.dart';
 import 'package:app/ui/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class RequestStatusPage extends StatelessWidget {
+class RequestStatusPage extends StatefulWidget {
   final String area;
   final Coordinates destination;
   const RequestStatusPage({
@@ -18,6 +20,19 @@ class RequestStatusPage extends StatelessWidget {
     required this.area,
     required this.destination,
   });
+
+  @override
+  State<RequestStatusPage> createState() => _RequestStatusPageState();
+}
+
+class _RequestStatusPageState extends State<RequestStatusPage> {
+  @override
+  void initState() {
+    sl.get<OpenReqBloc>().add(
+          GetOpenReqEvent(area: AREA),
+        );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +67,7 @@ class RequestStatusPage extends StatelessWidget {
                 ),
                 CustomSpacers.height12,
                 Text(
-                  'Boom! You just became a champion  ${area.isEmpty ? '' : 'for $area '}! By accepting to clean, you\'re not just picking up trash, you\'re creating a ripple effect of positive change.',
+                  'Boom! You just became a champion  ${widget.area.isEmpty ? '' : 'for ${widget.area} '}! By accepting to clean, you\'re not just picking up trash, you\'re creating a ripple effect of positive change.',
                   textAlign: TextAlign.center,
                   style: AppStyles.roboto_14_400_dark,
                 ),
@@ -96,7 +111,7 @@ class RequestStatusPage extends StatelessWidget {
                         onTap: () {
                           sl.get<MapBloc>().add(
                                 LaunchGoogleMaps(
-                                  destination: destination,
+                                  destination: widget.destination,
                                 ),
                               );
                         },

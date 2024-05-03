@@ -382,14 +382,6 @@ class _ProfilePageState extends State<ProfilePage> {
         CustomSpacers.height40,
         ProfileTile(
           leading: Icon(
-            Icons.call,
-            color: AppColors.primary,
-          ),
-          title: 'Settings',
-          onTap: () {},
-        ),
-        ProfileTile(
-          leading: Icon(
             Icons.notifications,
             color: AppColors.primary,
           ),
@@ -398,10 +390,10 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         ProfileTile(
           leading: Icon(
-            Icons.language,
+            Icons.verified_user,
             color: AppColors.primary,
           ),
-          title: 'Language',
+          title: 'Others Accepted Requests',
           onTap: () {},
         ),
         ProfileTile(

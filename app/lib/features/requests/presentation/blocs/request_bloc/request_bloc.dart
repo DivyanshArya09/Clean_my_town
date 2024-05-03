@@ -32,9 +32,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
               .updateUser({'number': event.requestModel.number});
         }
         if (token == null) {
-          print('i am here===============================================');
         } else {
-          print('token is =======================================>$token');
           event.requestModel = event.requestModel.copyWith(
             token: token,
           );
@@ -94,10 +92,22 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
     on<AcceptRequestEvent>(
       (event, emit) async {
         emit(AcceptRequestLoading());
+
         try {
           UserModel? _user = await SharedPreferencesHelper.getUserData();
 
           if (event.entity.volunteer != null) {
+            final response =
+                await fireStoreDataSources.accepetRequest(event.entity.docId);
+
+            response.fold(
+              (failure) =>
+                  emit(AcceptRequestFailed(message: "Unable to accept")),
+              (r) {
+                print(
+                    '=============SUCCESSSSSSSSSSSSSSSSSSS=======================> ');
+              },
+            );
             final result = await realtimeDBHelper.setVolunteers(
                 event.entity.volunteer!, event.entity.docId);
 

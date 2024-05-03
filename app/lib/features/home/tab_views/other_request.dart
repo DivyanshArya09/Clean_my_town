@@ -47,7 +47,9 @@ class _OthersRequestState extends State<OthersRequest> {
           );
         }
         if (state is OpenReqLoaded && state.requests.isNotEmpty) {
-          return _buildRequestBody(state.requests);
+          return state.requests.isEmpty
+              ? _buildEmptyBody()
+              : _buildRequestBody(state.requests);
         }
         if (state is OpenReqError) {
           return Center(

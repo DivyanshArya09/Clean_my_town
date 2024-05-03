@@ -26,13 +26,24 @@ class RealtimeDBdataSources {
           results.add(RequestModel.fromJson(value as Map));
         },
       );
+
+      final fireStoreResult = await fireStoreHelpers.getUser();
+
+      print('fireStoreResult: ${fireStoreResult?.acceptedRequests}');
+
+      if (fireStoreResult != null) {
+        results = results
+            .where((item) =>
+                !fireStoreResult.acceptedRequests!.contains(item.docId))
+            .toList();
+      }
       return right(results);
     } catch (e) {
       return left(NormalFailure(message: e.toString()));
     }
   }
 
-  Stream<DatabaseEvent> getRealTimeData(String area) {
+  Stream<DatabaseEvent> getRealTimeDataByArea(String area) {
     return db.orderByChild('area').equalTo(area).onValue;
   }
 
@@ -62,6 +73,16 @@ class RealtimeDBdataSources {
     return const Right(null);
   }
 
+  Future<Either<Failure, RequestModel>> getRequestByID(String docId) async {
+    try {
+      final response = await db.child(docId).once();
+      Map values = response.snapshot.value as Map;
+      return right(RequestModel.fromJson(values));
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
   Future<Either<Failure, void>> setVolunteers(
       VolunteerModel data, String docId) async {
     try {
@@ -89,6 +110,15 @@ class RealtimeDBdataSources {
     return const Right([]);
   }
 
+  Future<Either<Failure, void>> deleteRequest(String docId) async {
+    try {
+      await db.child(docId).remove();
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+    return const Right(null);
+  }
+
   Future<Either<Failure, List<RequestModel>>> getRequests() async {
     try {
       String? token = await SharedPreferencesHelper.getUser();
@@ -97,7 +127,7 @@ class RealtimeDBdataSources {
           ServerFailure(message: 'No user found with this token'),
         );
 
-      UserModel? user = await fireStoreHelpers.getUser(token);
+      UserModel? user = await fireStoreHelpers.getUser(token: token);
       if (user == null)
         return const Left(
           ServerFailure(message: 'No user found with this token'),

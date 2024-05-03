@@ -143,17 +143,20 @@ class _HomePageState extends State<HomePage> {
                             current is MyRequestSuccess,
                         builder: (context, state) {
                           if (state is MyRequestSuccess) {
-                            return Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.primary,
-                              ),
-                              child: Text(
-                                state.requestModel.length.toString(),
-                                textAlign: TextAlign.center,
-                                style: AppStyles.roboto_14_500_light,
+                            return Visibility(
+                              visible: state.requestModel.isNotEmpty,
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.primary,
+                                ),
+                                child: Text(
+                                  state.requestModel.length.toString(),
+                                  textAlign: TextAlign.center,
+                                  style: AppStyles.roboto_14_500_light,
+                                ),
                               ),
                             );
                           }
@@ -176,17 +179,20 @@ class _HomePageState extends State<HomePage> {
                             current is OpenReqLoaded,
                         builder: (context, state) {
                           if (state is OpenReqLoaded) {
-                            return Container(
-                              alignment: Alignment.center,
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColors.primary,
-                              ),
-                              child: Text(
-                                state.requests.length.toString(),
-                                textAlign: TextAlign.center,
-                                style: AppStyles.roboto_14_500_light,
+                            return Visibility(
+                              visible: state.requests.isNotEmpty,
+                              child: Container(
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColors.primary,
+                                ),
+                                child: Text(
+                                  state.requests.length.toString(),
+                                  textAlign: TextAlign.center,
+                                  style: AppStyles.roboto_14_500_light,
+                                ),
                               ),
                             );
                           }

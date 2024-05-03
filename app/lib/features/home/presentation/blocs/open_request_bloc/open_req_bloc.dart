@@ -19,12 +19,10 @@ class OpenReqBloc extends Bloc<OpenReqEvent, OpenReqState> {
   OpenReqBloc() : super(OpenReqInitialState()) {
     on<OpenReqInitial>(
       (event, emit) async {
-        print(
-            '===========================>>>>>>>>>>>>>>>>>>> this is area $AREA');
-        _requestSubscription = realtimeDBHelper.getRealTimeData(AREA).listen(
+        _requestSubscription =
+            realtimeDBHelper.getRealTimeDataByArea(AREA).listen(
           (event) {
             if (event.snapshot.value != null && !_isClosed) {
-              print('==========SUCCESSSSS=============> this is event $event');
               add(GetOpenReqEvent(area: AREA));
             }
           },
@@ -36,11 +34,8 @@ class OpenReqBloc extends Bloc<OpenReqEvent, OpenReqState> {
       (event, emit) async {
         emit(OpenReqLoading());
         final result = await realtimeDBHelper.getOthersRquest(event.area);
-        result.fold(
-            (l) => emit(OpenReqError(l.message ?? '')),
-            (r) => r.isEmpty
-                ? emit(OpenReqError('No Active Requests in Your Area..'))
-                : emit(OpenReqLoaded(r)));
+        result.fold((l) => emit(OpenReqError(l.message ?? '')),
+            (r) => emit(OpenReqLoaded(r)));
       },
     );
   }

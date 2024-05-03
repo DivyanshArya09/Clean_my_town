@@ -99,7 +99,6 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
               buildWhen: (previous, current) => current is OpenReqLoaded,
               bloc: sl.get<OpenReqBloc>(),
               builder: (context, state) {
-                print('--======================<  I am here');
                 return _buildDetailPage(
                   (state as OpenReqLoaded)
                       .requests
@@ -322,6 +321,8 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
         return CustomButton(
           btnTxt: 'Accept Request',
           onTap: () {
+            print(
+                '===========DOCID==========================>${widget.requestModel.docId}');
             _acceptRequestEnity = _acceptRequestEnity.copwith(
               docId: widget.requestModel.docId,
               fcmToken: widget.requestModel.token,
@@ -330,6 +331,10 @@ class _OthersRequestDetailPageState extends State<OthersRequestDetailPage> {
                 fcmToken: USERMODEL.token!,
               ),
             );
+
+            print(
+                '===========DOCID==========================>${_acceptRequestEnity.docId}');
+
             _requestRefBloc
                 .add(AcceptRequestEvent(entity: _acceptRequestEnity));
           },

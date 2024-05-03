@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:app/core/data/firebase_storage_data_sources/firebase_storage.dart';
 import 'package:app/core/data/firestore_datasources/firestore.dart';
 import 'package:app/core/helpers/image_picker_helper/image_picker_helper.dart';
-import 'package:app/core/helpers/user_helpers/user_helper.dart';
 import 'package:app/features/home/models/user_model.dart';
 import 'package:app/features/profile/presentation/model/profile_model.dart';
 import 'package:bloc/bloc.dart';
@@ -100,13 +99,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       (event, emit) async {
         print('event================> called');
         emit(GetUserLoadingState());
-        String? token = await SharedPreferencesHelper.getUser();
-
-        if (token == null)
-          return emit(GetUserErrorState(message: 'User not found'));
 
         try {
-          final result = await _fireStoreHelpers.getUser(token);
+          final result = await _fireStoreHelpers.getUser();
 
           if (result == null) {
             return emit(GetUserErrorState(message: 'User not found'));

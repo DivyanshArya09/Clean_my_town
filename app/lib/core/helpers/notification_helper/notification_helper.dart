@@ -6,7 +6,6 @@ class NotificationHelper {
   static Future<void> postNotification(
       String title, String body, String token) async {
     try {
-      print('+========I am here ===========> $token');
       final response = await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
@@ -34,9 +33,11 @@ class NotificationHelper {
         ),
       );
 
-      print('================RESPONSE====================> ${response.body}');
+      print(
+          '==========NOTIFICATION======RESPONSE====================> ${response.body}');
     } catch (e) {
-      print('======================ERROR==============================> $e');
+      print(
+          '==============NOTIFICATION========ERROR==============================> $e');
     }
   }
 }

@@ -54,7 +54,6 @@ class FireStoreDataSources {
     try {
       String? docID = await SharedPreferencesHelper.getUser();
 
-      print('======================================> docID $docID');
       DocumentReference docRef =
           FirebaseFirestore.instance.collection('users').doc(docID);
       docRef.update({
@@ -81,6 +80,34 @@ class FireStoreDataSources {
     }
   }
 
+  Future<Either<Failure, bool>> accepetRequest(String reqID) async {
+    print('======================This metod called=================>  $reqID');
+    try {
+      String? docID = await SharedPreferencesHelper.getUser();
+      DocumentReference docRef =
+          FirebaseFirestore.instance.collection('users').doc(docID);
+      docRef.update({
+        'myacceptedrequests': FieldValue.arrayUnion([reqID]),
+      });
+
+      return const Right(true);
+    } catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
+  }
+
+  // Future<Either<Failure, List<String>>> getaccepetRequest(String reqID) async {
+  //   print('======================This metod called=================>  $reqID');
+  //   try {
+  //     String? docID = await SharedPreferencesHelper.getUser();
+  //     DocumentReference docRef =
+  //         FirebaseFirestore.instance.collection('users').doc(docID);
+  //         docRef.get()
+  //   } catch (e) {
+  //     return Left(ServerFailure(message: e.toString()));
+  //   }
+  // }
+
   Future<void> updatelocation(String town) async {
     String? token = await SharedPreferencesHelper.getUser();
     if (token != null) {
@@ -94,10 +121,11 @@ class FireStoreDataSources {
     }
   }
 
-  Future<UserModel?> getUser(String token) async {
+  Future<UserModel?> getUser({String? token}) async {
     try {
+      String? id = await SharedPreferencesHelper.getUser();
       DocumentSnapshot documentSnapshot =
-          await FirebaseFirestore.instance.collection('users').doc(token).get();
+          await FirebaseFirestore.instance.collection('users').doc(id).get();
 
       if (documentSnapshot.exists) {
         Map<String, dynamic> data =

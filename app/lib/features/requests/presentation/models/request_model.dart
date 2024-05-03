@@ -17,6 +17,7 @@ class RequestModel extends Equatable {
   final String fullAddress;
   final String? docId;
   final String token;
+  final List<String>? acceptedRequests;
   final List<VolunteerModel>? volunteers;
 
   RequestModel({
@@ -33,6 +34,7 @@ class RequestModel extends Equatable {
     this.docId = '',
     this.volunteers,
     required this.token,
+    this.acceptedRequests,
     required this.number,
   });
 
@@ -55,8 +57,6 @@ class RequestModel extends Equatable {
   }
 
   factory RequestModel.fromJson(Map json) {
-    print(
-        '===========================> ${json['status'].toString().requestStatus}');
     return RequestModel(
       image: json['image'] ?? '',
       area: json['town'] ?? '',
@@ -71,6 +71,9 @@ class RequestModel extends Equatable {
       docId: json['docId'] ?? '',
       token: json['token'] ?? '',
       number: json['number'] ?? '',
+      acceptedRequests: json['acceptedRequests'] != null
+          ? List<String>.from(json['acceptedRequests'])
+          : null,
       volunteers: json['volunteers'] != null
           ? List<VolunteerModel>.from(
               json['volunteers'].map((x) => VolunteerModel.fromJson(x)))

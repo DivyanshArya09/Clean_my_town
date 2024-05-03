@@ -14,16 +14,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       (event, emit) async {
         emit(GetUserDetailsLoading());
         try {
-          String uid = await SharedPreferencesHelper.getUser() ?? '';
-          if (uid != '') {
+          emit(GetUserDetailsError('Failed to get User'));
+          final result = await fireStoreHelpers.getUser();
+          if (result != null) {
+            await SharedPreferencesHelper.SaveUser(result.toMap());
+            emit(GetUserDetailsSuccess(result));
+          } else {
             emit(GetUserDetailsError('Failed to get User'));
-            final result = await fireStoreHelpers.getUser(uid);
-            if (result != null) {
-              await SharedPreferencesHelper.SaveUser(result.toMap());
-              emit(GetUserDetailsSuccess(result));
-            } else {
-              emit(GetUserDetailsError('Failed to get User'));
-            }
           }
         } catch (e) {
           emit(GetUserDetailsError(e.toString()));

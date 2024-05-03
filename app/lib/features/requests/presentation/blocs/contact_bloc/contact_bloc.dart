@@ -13,7 +13,7 @@ class ContactBloc extends Bloc<ContactEvent, ContactState> {
       (event, emit) async {
         try {
           emit(GetContactDetailsLoading());
-          final result = await fireStoreHelpers.getUser(event.uid);
+          final result = await fireStoreHelpers.getUser();
           if (result != null) {
             emit(GetContactDetailsSuccess(result));
           } else {

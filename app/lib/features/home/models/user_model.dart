@@ -3,6 +3,7 @@ class UserModel {
   final String email;
   final String password;
   final List<String> requests;
+  final List<String>? acceptedRequests;
   final String location;
   final String profilePicture;
   final String? token;
@@ -17,6 +18,7 @@ class UserModel {
     required this.profilePicture,
     this.number,
     this.token,
+    this.acceptedRequests,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -29,6 +31,7 @@ class UserModel {
       profilePicture: map['profilePicture'] ?? '',
       number: map['number'] ?? '',
       token: map['fcmToken'] ?? '',
+      acceptedRequests: List<String>.from(map['myacceptedrequests'] ?? []),
     );
   }
 
