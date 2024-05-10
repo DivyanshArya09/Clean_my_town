@@ -39,12 +39,11 @@ Divyansh
 aryadivyansh8@gmail.com
 
 # ScreenShots
-![Screenshot__230_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/625b3a65-b378-4299-9cf0-5fbd152efd86)
-![Screenshot__231_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/5e9566f8-3c03-4ff2-973a-5cd4a900e280)
-![Screenshot__232_-removebg-preview (1)](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/7d8bbfa9-0307-4f8e-bff4-850a1caba7c5)
+![Screenshot__218_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/e6f4d348-4e6b-4589-87e7-6081f08d12b2)
+![Screenshot__23![Screenshot__222_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/354893e7-5a99-4c33-b965-ccf5d7e5e82e)
+0_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/625b3a65-b378-4299-9cf0-5fbd152efd86)
 ![Screenshot__233_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/4051c9ac-9bdd-46cf-8d78-8b7b4de3f9b7)
 ![Screenshot__235_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/12d521b5-9fb4-43f3-a729-0d9f852dc9a2)
-![Screenshot__232_-removebg-preview (2)](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/841ae86b-bbf6-4f11-b525-ae135bcbd341)
 ![Screenshot__232_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/86e11fcc-09de-4a27-ac22-46aeca3fc062)
 ![Screenshot__225_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/e500609f-3c04-4b32-83cc-d37740e2b19b)
 ![Screenshot__226_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/7c5c88f7-909f-46d0-80f7-35c2647282d0)
