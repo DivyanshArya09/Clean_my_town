@@ -43,8 +43,6 @@ aryadivyansh8@gmail.com
 ---
 ![Screenshot__23![Screenshot__222_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/354893e7-5a99-4c33-b965-ccf5d7e5e82e)
 ---
-0_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/625b3a65-b378-4299-9cf0-5fbd152efd86)
----
 ![Screenshot__233_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/4051c9ac-9bdd-46cf-8d78-8b7b4de3f9b7)
 ---
 ![Screenshot__235_-removebg-preview](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/12d521b5-9fb4-43f3-a729-0d9f852dc9a2)
