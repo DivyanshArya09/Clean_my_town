@@ -40,6 +40,5 @@ aryadivyansh8@gmail.com
 
 # ScreenShots
 
-![Screenshot (225)-fotor-bg-remover-20240421132616](https://github.com/DivyanshArya09/Clean_my_town/assets/114161134/25d94e32-2ede-42f1-bf9c-956bcb87bbfc)
 
 
